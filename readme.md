@@ -6,8 +6,8 @@ Translation management for your Laravel application.
 
 ![Laravel Translation UI](translation.png)
 
-![GitHub](https://img.shields.io/github/checks-status/joedixon/laravel-translation/master?style=for-the-badge)
-![GitHub](https://img.shields.io/github/license/joedixon/laravel-translation.svg?style=for-the-badge)
+![GitHub](https://img.shields.io/github/checks-status/arm092/laravel-translation/master?style=for-the-badge)
+![GitHub](https://img.shields.io/github/license/arm092/laravel-translation.svg?style=for-the-badge)
 
 </div>
 
@@ -17,7 +17,7 @@ Translation management for your Laravel application.
 
 Laravel Translation is a package for Laravel which allows you full control
 over your translations when using [Laravel's
-localization](https://laravel.com/docs/5.7/localization) functionality.
+localization](https://laravel.com/docs/11.x/localization) functionality.
 
 The package allows you to manage your translations using either the native file
 based translations, but also provides a database driver which is useful in
@@ -56,7 +56,7 @@ Publish configuration and assets
 
 `php artisan vendor:publish --provider="JoeDixon\Translation\TranslationServiceProvider"`
 
-The service provider is loaded automatically using [package discovery](https://laravel.com/docs/5.7/packages#package-discovery).
+The service provider is loaded automatically using [package discovery](https://laravel.com/docs/11.x/packages#package-discovery).
 
 ## Usage
 
@@ -115,7 +115,7 @@ Choose the name of the translations table when using the database driver.
 #### File
 Utitlises Laravel's native php array and JSON based language files and exposes a
 user interface to manage the enclosed translations. Add and update languages and translations
-using either the user interface or the built-in [Artisan commands](https://laravel.com/docs/5.7/artisan).
+using either the user interface or the built-in [Artisan commands](https://laravel.com/docs/11.x/artisan).
 
 #### Database
 The database driver takes all of the functionality of Laravel's file based
