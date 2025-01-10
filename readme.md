@@ -43,12 +43,14 @@ Below are a full list of features:
 |      7.x      |          1.x        |
 |      8.x      |          2.x        |
 |      9.x      |          2.x        |
+|      10.x     |          3.x        |
+|      11.x     |          3.x        |
 
 ## Installation
 
 Install the package via Composer
 
-`composer require joedixon/laravel-translation`
+`composer require arm092/laravel-translation`
 
 Publish configuration and assets
 

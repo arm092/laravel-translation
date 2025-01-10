@@ -1,17 +1,21 @@
 {
-    "name": "joedixon/laravel-translation",
-    "description": "A tool for managing all of your Laravel translations",
+    "name": "arm092/laravel-translation",
+    "description": "A tool for managing all of your Laravel 10+ translations",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
             "name": "Joe Dixon",
             "email": "hello@joedixon.co.uk"
+        },
+        {
+            "name": "Arman Khachatryan",
+            "email": "arman.khachatryan@apricode.am"
         }
     ],
     "require": {
         "php": "^8.0",
-        "illuminate/support": "^8.0||^9.0||^10.0",
+        "illuminate/support": "^8.0||^9.0||^10.0||^11.0",
         "laravel/legacy-factories": "^1.3"
     },
     "require-dev": {
