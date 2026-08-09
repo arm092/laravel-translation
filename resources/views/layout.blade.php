@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+@inject('translationFrontend', 'JoeDixon\Translation\Support\Frontend')
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -19,6 +20,10 @@
         
     </div>
     
-    <script type="module" src="{{ asset('/vendor/translation/js/app.js') }}"></script>
+    @if($translationFrontend->usesLivewire())
+        @php(app('livewire')->forceAssetInjection())
+    @else
+        <script type="module" src="{{ asset('/vendor/translation/js/app.js') }}"></script>
+    @endif
 </body>
 </html>

@@ -165,7 +165,7 @@
     }
 
     .translation-editor {
-        @apply flex items-start gap-2;
+        @apply relative flex items-start gap-2;
     }
 
     .translation-editor button {

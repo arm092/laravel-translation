@@ -11,6 +11,7 @@ use JoeDixon\Translation\Console\Commands\ListMissingTranslationKeys;
 use JoeDixon\Translation\Console\Commands\SynchroniseMissingTranslationKeys;
 use JoeDixon\Translation\Console\Commands\SynchroniseTranslationsCommand;
 use JoeDixon\Translation\Drivers\Translation;
+use JoeDixon\Translation\Support\Frontend;
 
 class TranslationServiceProvider extends ServiceProvider
 {
@@ -22,6 +23,8 @@ class TranslationServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadViews();
+
+        $this->registerLivewireComponents();
 
         $this->registerRoutes();
 
@@ -161,6 +164,8 @@ class TranslationServiceProvider extends ServiceProvider
      */
     private function registerContainerBindings(): void
     {
+        $this->app->singleton(Frontend::class);
+
         $this->app->singleton(Scanner::class, function () {
             $config = $this->app['config']['translation'];
 
@@ -170,5 +175,22 @@ class TranslationServiceProvider extends ServiceProvider
         $this->app->singleton(Translation::class, function ($app) {
             return (new TranslationManager($app, $app['config']['translation'], $app->make(Scanner::class)))->resolve();
         });
+    }
+
+    /**
+     * Register optional Livewire 4 components.
+     */
+    private function registerLivewireComponents(): void
+    {
+        if (! $this->app->make(Frontend::class)->usesLivewire()) {
+            return;
+        }
+
+        \Livewire\Livewire::addNamespace(
+            namespace: 'translation-manager',
+            classNamespace: 'JoeDixon\\Translation\\Livewire',
+            classPath: __DIR__.'/Livewire',
+            classViewPath: __DIR__.'/../resources/views/livewire',
+        );
     }
 }
