@@ -13,16 +13,20 @@ class TranslationBindingsServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
-        if ($this->app['config']['translation.driver'] === 'database') {
-            $this->registerDatabaseTranslator();
-        } else {
-            parent::register();
+        if ($this->app['config']['translation.driver'] !== 'database') {
+            if (! $this->app->bound('translator')) {
+                parent::register();
+            }
+
+            return;
         }
+
+        $this->registerDatabaseTranslator();
     }
 
-    private function registerDatabaseTranslator()
+    private function registerDatabaseTranslator(): void
     {
         $this->registerDatabaseLoader();
 
@@ -31,25 +35,18 @@ class TranslationBindingsServiceProvider extends ServiceProvider
             // When registering the translator component, we'll need to set the default
             // locale as well as the fallback locale. So, we'll grab the application
             // configuration so we can easily get both of these values from there.
-            $locale = $app['config']['app.locale'];
+            $locale = $app->getLocale();
             $trans = new Translator($loader, $locale);
-            $trans->setFallback($app['config']['app.fallback_locale']);
+            $trans->setFallback($app->getFallbackLocale());
 
             return $trans;
         });
     }
 
-    protected function registerDatabaseLoader()
+    protected function registerDatabaseLoader(): void
     {
         $this->app->singleton('translation.loader', function ($app) {
-            // Post Laravel 5.4, the interface was moved to the contracts
-            // directory. Here we perform a check to see whether or not the
-            // interface exists and instantiate the relevant loader accordingly.
-            if (interface_exists('Illuminate\Contracts\Translation\Loader')) {
-                return new ContractDatabaseLoader($this->app->make(Translation::class));
-            }
-
-            return new InterfaceDatabaseLoader($this->app->make(Translation::class));
+            return new ContractDatabaseLoader($app->make(Translation::class));
         });
     }
 }

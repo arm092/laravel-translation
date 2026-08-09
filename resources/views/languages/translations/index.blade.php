@@ -58,13 +58,13 @@
                                                 <td>{{ $key }}</td>
                                                 <td>{{ $value[config('app.locale')] }}</td>
                                                 <td>
-                                                    <translation-input 
-                                                        initial-translation="{{ $value[$language] }}" 
-                                                        language="{{ $language }}" 
-                                                        group="{{ $group }}" 
-                                                        translation-key="{{ $key }}" 
-                                                        route="{{ config('translation.ui_url') }}">
-                                                    </translation-input>
+                                                    @include('translation::components.translation-input', [
+                                                        'initialTranslation' => $value[$language],
+                                                        'language' => $language,
+                                                        'group' => $group,
+                                                        'translationKey' => $key,
+                                                        'endpoint' => route('languages.translations.update', $language),
+                                                    ])
                                                 </td>
                                             </tr>
                                         @endif

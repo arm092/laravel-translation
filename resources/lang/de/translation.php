@@ -44,4 +44,8 @@ return [
     'key_placeholder' => 'z.B. invalid_key',
     'value_placeholder' => 'z.B. Schlüssel müssen eine einzige Zeichenfolge sein',
     'advanced_options' => 'Erweiterte Optionen umschalten',
+    'edit_translation' => 'Übersetzung bearbeiten',
+    'translation_value' => 'Übersetzungswert',
+    'translation_saved' => 'Übersetzung gespeichert',
+    'translation_save_failed' => 'Übersetzung konnte nicht gespeichert werden',
 ];

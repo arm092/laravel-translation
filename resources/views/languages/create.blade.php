@@ -28,7 +28,7 @@
 
             <div class="panel-footer flex flex-row-reverse">
 
-                <button class="button button-blue">
+                <button class="button button-primary">
                     {{ __('translation::translation.save') }}
                 </button>
 

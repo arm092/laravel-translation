@@ -1,3 +1,6 @@
 /vendor/
 /node_modules
 .phpunit.result.cache
+.phpunit.cache/
+.serve*.log
+composer.lock

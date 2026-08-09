@@ -23,8 +23,21 @@ return [
     |
     */
     'route_group_config' => [
-        'middleware' => 'web',
+        'middleware' => ['web'],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Authorization gate
+    |--------------------------------------------------------------------------
+    |
+    | Optionally require a Laravel gate before the translation manager routes
+    | may be accessed. Leave this value null to preserve the package's legacy
+    | behavior. Production applications should combine a gate with the auth
+    | middleware in route_group_config above.
+    |
+    */
+    'authorization_gate' => null,
 
     /*
     |--------------------------------------------------------------------------
