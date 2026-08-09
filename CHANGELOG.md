@@ -2,6 +2,32 @@
 
 All notable changes to this project are documented in this file.
 
+## [4.1.0] - 2026-08-09
+
+### Added
+
+- Automatic optional Livewire 4 inline editing when `livewire/livewire:^4.0` is installed and active.
+- A namespaced Livewire translation-input component with locked identifiers, server-side validation, and unchanged/loading/saved/error states.
+- Dedicated Livewire 4 compatibility jobs for every Laravel 10–13 matrix line and a Livewire 3 fallback job.
+- Detailed Livewire installation, selection, authorization, asset, upgrade, and troubleshooting documentation.
+
+### Changed
+
+- HTTP and Livewire writes now share one translation-write action and continue to dispatch the existing `TranslationAdded` event.
+- Manager route middleware and Livewire mutations share the same authorization service; the configured gate is rechecked before every Livewire save.
+- Livewire mode uses Livewire's Alpine/runtime assets and does not load the package Alpine bundle. Fallback behavior and public asset URLs remain unchanged.
+
+### Security
+
+- Livewire component locale, group, and translation-key properties are locked against client mutation.
+- Livewire payloads use the same locale, namespace, group, key, and value validation rules as the existing HTTP endpoint.
+
+### Compatibility
+
+- Livewire remains optional and is not a runtime Composer requirement.
+- Livewire 3, an inactive Livewire provider, no Livewire installation, and unsupported future majors use the existing Blade/Alpine/Fetch frontend.
+- Laravel 10–13, PHP 8.1+, file/database drivers, and the Apricode palette remain supported without breaking configuration changes.
+
 ## [4.0.0] - 2026-08-09
 
 ### Added

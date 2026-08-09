@@ -4,9 +4,8 @@ namespace JoeDixon\Translation\Drivers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
-use JoeDixon\Translation\Events\TranslationAdded;
+use JoeDixon\Translation\Actions\WriteTranslation;
 
 abstract class Translation
 {
@@ -104,18 +103,15 @@ abstract class Translation
 
     public function add(Request $request, $language, $isGroupTranslation)
     {
-        $namespace = $request->has('namespace') && $request->get('namespace') ? "{$request->get('namespace')}::" : '';
-        $group = $namespace.$request->get('group');
-        $key = $request->get('key');
-        $value = $request->get('value') ?: '';
-
-        if ($isGroupTranslation) {
-            $this->addGroupTranslation($language, $group, $key, $value);
-        } else {
-            $this->addSingleTranslation($language, $group ?: 'single', $key, $value);
-        }
-
-        Event::dispatch(new TranslationAdded($language, $group ?: 'single', $key, $value));
+        app(WriteTranslation::class)->handle(
+            $this,
+            $language,
+            $request->get('namespace'),
+            $request->get('group'),
+            $request->get('key'),
+            $request->get('value'),
+            $isGroupTranslation,
+        );
     }
 
     protected function assertValidLocale(string $locale): void

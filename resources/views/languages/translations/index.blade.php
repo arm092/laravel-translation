@@ -1,4 +1,5 @@
 @extends('translation::layout')
+@inject('translationFrontend', 'JoeDixon\Translation\Support\Frontend')
 
 @section('body')
 
@@ -58,13 +59,24 @@
                                                 <td>{{ $key }}</td>
                                                 <td>{{ $value[config('app.locale')] }}</td>
                                                 <td>
-                                                    @include('translation::components.translation-input', [
-                                                        'initialTranslation' => $value[$language],
-                                                        'language' => $language,
-                                                        'group' => $group,
-                                                        'translationKey' => $key,
-                                                        'endpoint' => route('languages.translations.update', $language),
-                                                    ])
+                                                    @if($translationFrontend->usesLivewire())
+                                                        @php
+                                                            echo app('livewire')->mount('translation-manager::translation-input', [
+                                                                'initialTranslation' => $value[$language],
+                                                                'language' => $language,
+                                                                'group' => $group,
+                                                                'translationKey' => $key,
+                                                            ], 'translation-input-'.hash('sha256', $language."\0".$group."\0".$key));
+                                                        @endphp
+                                                    @else
+                                                        @include('translation::components.translation-input', [
+                                                            'initialTranslation' => $value[$language],
+                                                            'language' => $language,
+                                                            'group' => $group,
+                                                            'translationKey' => $key,
+                                                            'endpoint' => route('languages.translations.update', $language),
+                                                        ])
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endif
