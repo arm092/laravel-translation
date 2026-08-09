@@ -24,6 +24,7 @@ All notable changes to this project are documented in this file.
 - The database translator loader is registered only for the database driver.
 - Frontend tooling now uses Vite 8, Tailwind CSS 4, Alpine.js 3, Blade, and vanilla Fetch.
 - The default manager UI now uses a wide, responsive top-navigation layout with clearer tables, forms, filters, focus states, and the eight semantic Apricode palette tokens.
+- README branding now uses the Apricode logo and an up-to-date screenshot of the sidebar-free manager UI.
 - Select controls suppress the browser-native indicator and render one consistent package caret.
 - HTTP and Livewire writes share one translation-write action and continue to dispatch `TranslationAdded`.
 - Manager routes and Livewire mutations share one authorizer; the configured gate is rechecked before every Livewire save.
