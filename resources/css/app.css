@@ -1,0 +1,218 @@
+@import "tailwindcss";
+@source "../views/**/*.blade.php";
+@source "../js/**/*.js";
+
+@theme {
+    --color-primary: #FD971F;
+    --color-success: #A6E22E;
+    --color-error: #F92672;
+    --color-info: #66D9EF;
+    --color-graphite: #272822;
+    --color-ink: #060606;
+    --color-paper: #F8F8F2;
+    --color-white: #FFFFFF;
+}
+
+@layer base {
+    [x-cloak] {
+        display: none !important;
+    }
+
+    body {
+        @apply m-0 min-h-screen bg-paper text-ink antialiased;
+    }
+
+    a {
+        @apply text-primary underline-offset-4 hover:underline;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+        @apply focus:outline-none focus:ring-2 focus:ring-info;
+    }
+}
+
+@layer components {
+    .header {
+        @apply flex h-16 w-full items-center border-b border-primary bg-graphite text-paper;
+    }
+
+    .header ul {
+        @apply flex list-none;
+    }
+
+    .header li {
+        @apply px-4;
+    }
+
+    .header a {
+        @apply flex items-center text-paper no-underline opacity-80 hover:text-primary hover:opacity-100;
+    }
+
+    .header a.active {
+        @apply text-primary opacity-100;
+    }
+
+    .panel {
+        @apply m-6 rounded border border-graphite bg-white text-graphite;
+        box-shadow: 0 0.25rem 1rem color-mix(in srgb, var(--color-ink) 16%, transparent);
+    }
+
+    .panel-header {
+        @apply flex items-center border-b border-graphite p-4 text-lg font-light;
+    }
+
+    .panel-footer {
+        @apply border-t border-graphite bg-paper p-4;
+    }
+
+    .panel-body {
+        @apply overflow-x-auto;
+    }
+
+    .panel-body table {
+        @apply w-full table-fixed border-collapse;
+    }
+
+    .panel-body th,
+    .panel-body td {
+        @apply break-words p-4 text-left align-top;
+    }
+
+    .panel-body th {
+        @apply text-graphite;
+    }
+
+    .panel-body td {
+        @apply font-light;
+    }
+
+    .panel-body tr {
+        @apply border-b border-graphite;
+    }
+
+    .panel-body thead tr,
+    .panel-body tbody tr:nth-child(even) {
+        background: color-mix(in srgb, var(--color-paper) 86%, var(--color-white));
+    }
+
+    .panel-body tbody tr:hover {
+        background: color-mix(in srgb, var(--color-info) 18%, var(--color-white));
+    }
+
+    .panel-body tbody tr:last-child {
+        @apply border-0;
+    }
+
+    .button {
+        @apply rounded border border-graphite bg-white px-4 py-2 text-sm font-bold text-graphite no-underline hover:border-primary hover:text-primary;
+    }
+
+    .button-primary {
+        @apply border-primary bg-primary text-ink hover:text-ink;
+        background-color: var(--color-primary);
+    }
+
+    .button-primary:hover {
+        background: color-mix(in srgb, var(--color-primary) 84%, var(--color-ink));
+    }
+
+    .input-group {
+        @apply mb-6 w-full last:mb-0;
+    }
+
+    .input-group label {
+        @apply mb-2 block text-xs font-bold uppercase tracking-wide text-graphite;
+    }
+
+    .input-group input {
+        @apply mb-3 block w-full appearance-none rounded border border-graphite bg-paper px-4 py-3 leading-tight text-graphite;
+    }
+
+    .input-group input.error {
+        @apply border-error;
+    }
+
+    .input-group .error-text {
+        @apply text-xs italic text-error;
+    }
+
+    .select-group {
+        @apply relative mr-2 last:mr-0;
+    }
+
+    .select-group select {
+        @apply block max-w-xs appearance-none rounded border border-graphite bg-white py-2 pr-8 pl-4 text-base leading-tight font-light text-graphite uppercase;
+    }
+
+    .select-group .caret {
+        @apply pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-graphite;
+    }
+
+    .select-group .caret svg {
+        @apply h-4 w-4 fill-current;
+    }
+
+    .search {
+        @apply relative mx-2 flex-1;
+        max-width: 31.25rem;
+    }
+
+    .search-input {
+        @apply w-full rounded border border-graphite bg-paper px-4 py-2 font-light text-graphite transition;
+    }
+
+    .translation-editor {
+        @apply flex items-start gap-2;
+    }
+
+    .translation-editor button {
+        @apply mt-1 shrink-0 cursor-pointer text-graphite;
+    }
+
+    .translation-editor textarea {
+        @apply h-auto w-full resize-none border-0 bg-transparent p-0 font-light text-graphite;
+    }
+
+    .translation-editor textarea.active {
+        @apply h-32 rounded border border-graphite bg-white p-2;
+    }
+
+    .status-success {
+        @apply bg-success p-6 text-ink;
+    }
+
+    .status-error {
+        @apply bg-error p-6 text-ink;
+    }
+
+    .status-info {
+        @apply bg-info p-6 text-ink;
+    }
+
+    @media (max-width: 40rem) {
+        .panel {
+            @apply m-4;
+        }
+
+        .panel-header,
+        .panel-header > .flex {
+            @apply flex-wrap gap-2;
+        }
+
+        .panel-header > .flex {
+            @apply w-full;
+        }
+
+        .search {
+            @apply order-first mx-0 w-full basis-full;
+            max-width: none;
+        }
+
+        .panel-body table {
+            min-width: 48rem;
+        }
+    }
+}

@@ -10,7 +10,7 @@
 
         </div>
 
-        <form action="{{ route('languages.translations.store', $language) }}" method="POST">
+        <form action="{{ route('languages.translations.store', $language) }}" method="POST" x-data="{ showAdvancedOptions: false }">
 
             <fieldset>
 
@@ -26,11 +26,11 @@
                     
                     <div class="input-group">
 
-                        <button v-on:click="toggleAdvancedOptions" class="text-blue">{{ __('translation::translation.advanced_options') }}</button>
+                        <button type="button" x-on:click="showAdvancedOptions = ! showAdvancedOptions" class="text-primary">{{ __('translation::translation.advanced_options') }}</button>
 
                     </div>
 
-                    <div v-show="showAdvancedOptions">
+                    <div x-cloak x-show="showAdvancedOptions">
 
                         @include('translation::forms.text', ['field' => 'namespace', 'label' => __('translation::translation.namespace_label'), 'placeholder' => __('translation::translation.namespace_placeholder')])
                     
@@ -43,7 +43,7 @@
 
             <div class="panel-footer flex flex-row-reverse">
 
-                <button class="button button-blue">
+                <button class="button button-primary">
                     {{ __('translation::translation.save') }}
                 </button>
 

@@ -19,6 +19,6 @@
         
     </div>
     
-    <script src="{{ asset('/vendor/translation/js/app.js') }}"></script>
+    <script type="module" src="{{ asset('/vendor/translation/js/app.js') }}"></script>
 </body>
 </html>

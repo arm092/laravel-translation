@@ -42,4 +42,8 @@ return [
     'key_placeholder' => 'e.g. invalid_key',
     'value_placeholder' => 'e.g. Keys must be a single string',
     'advanced_options' => 'Toggle advanced options',
+    'edit_translation' => 'Edit translation',
+    'translation_value' => 'Translation value',
+    'translation_saved' => 'Translation saved',
+    'translation_save_failed' => 'Translation could not be saved',
 ];

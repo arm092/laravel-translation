@@ -42,4 +42,8 @@ return [
     'key_placeholder' => 'bijv. ongeldige sleutel',
     'value_placeholder' => 'bijv. Sleutels mogen geen spaties bevatten',
     'advanced_options' => 'Schakel geavanceerde opties in',
+    'edit_translation' => 'Vertaling bewerken',
+    'translation_value' => 'Vertaalwaarde',
+    'translation_saved' => 'Vertaling opgeslagen',
+    'translation_save_failed' => 'Vertaling kon niet worden opgeslagen',
 ];

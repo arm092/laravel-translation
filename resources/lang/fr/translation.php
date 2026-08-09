@@ -42,4 +42,8 @@ return [
     'value' => 'Valeur',
     'value_label' => 'Valeur',
     'value_placeholder' => 'Par exemple : Les clés doivent être une seule chaîne',
+    'edit_translation' => 'Modifier la traduction',
+    'translation_value' => 'Valeur de traduction',
+    'translation_saved' => 'Traduction enregistrée',
+    'translation_save_failed' => 'La traduction n’a pas pu être enregistrée',
 ];

@@ -1,19 +1,21 @@
 {
+  "name": "laravel-translation-assets",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
   "scripts": {
-    "dev": "NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "watch": "NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "hot": "NODE_ENV=development webpack-dev-server --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "production": "NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest run",
+    "check:palette": "node scripts/check-palette.mjs"
   },
-  "license": "MIT",
   "devDependencies": {
-    "laravel-mix": "^4.1.2",
-    "postcss": "^7.0.36",
-    "tailwindcss": "^0.6.6",
-    "vue-template-compiler": "^2.6.10"
-  },
-  "dependencies": {
-    "axios": "^0.18.1",
-    "vue": "^2.5.21"
+    "@tailwindcss/vite": "^4.3.3",
+    "alpinejs": "^3.15.12",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.2.1",
+    "vitest": "^4.1.10"
   }
 }
