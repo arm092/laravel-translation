@@ -2,32 +2,29 @@
 
 @section('body')
 
-    @if(count($languages))
-
-        <div class="panel w-1/2">
-
-            <div class="panel-header">
-
-                {{ __('translation::translation.languages') }}
-
-                <div class="flex flex-grow justify-end items-center">
-
-                    <a href="{{ route('languages.create') }}" class="button">
-                        {{ __('translation::translation.add') }}
-                    </a>
-
-                </div>
-
+    <section class="page">
+        <div class="page-heading">
+            <div class="page-heading-copy">
+                <h1>{{ __('translation::translation.languages') }}</h1>
+                <p class="page-subtitle">{{ __('translation::translation.language_management_hint') }}</p>
             </div>
 
-            <div class="panel-body">
+            <a href="{{ route('languages.create') }}" class="button button-primary">
+                {{ __('translation::translation.add_language') }}
+            </a>
+        </div>
 
-                <table>
+        <div class="panel data-surface">
+            <div class="panel-body">
+                @if(count($languages))
+
+                <table class="language-table">
 
                     <thead>
                         <tr>
                             <th>{{ __('translation::translation.language_name') }}</th>
                             <th>{{ __('translation::translation.locale') }}</th>
+                            <th><span class="sr-only">{{ __('translation::translation.translations') }}</span></th>
                         </tr>
                     </thead>
 
@@ -38,19 +35,24 @@
                                     {{ $name }}
                                 </td>
                                 <td>
-                                    <a href="{{ route('languages.translations.index', $language) }}">
-                                        {{ $language }}
+                                    <span class="locale-code">{{ $language }}</span>
+                                </td>
+                                <td class="text-right">
+                                    <a class="row-action" href="{{ route('languages.translations.index', $language) }}">
+                                        {{ __('translation::translation.translations') }}
                                     </a>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-
+                @else
+                    <div class="empty-state">
+                        <p>{{ __('translation::translation.no_languages') }}</p>
+                    </div>
+                @endif
             </div>
-
         </div>
-
-    @endif
+    </section>
 
 @endsection

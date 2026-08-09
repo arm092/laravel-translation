@@ -2,6 +2,8 @@
 
 return [
     'languages' => 'Talen',
+    'no_languages' => 'Er zijn nog geen talen toegevoegd.',
+    'language_management_hint' => 'Beheer de talen die beschikbaar zijn in uw applicatie.',
     'language' => 'Taal',
     'type' => 'Type',
     'file' => 'Bestand',

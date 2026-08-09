@@ -1,6 +1,6 @@
 <?php
 
-namespace JoeDixon\Translation\Events;
+namespace Arm092\Translation\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 

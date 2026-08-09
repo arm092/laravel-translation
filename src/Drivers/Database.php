@@ -1,11 +1,11 @@
 <?php
 
-namespace JoeDixon\Translation\Drivers;
+namespace Arm092\Translation\Drivers;
 
 use Illuminate\Support\Collection;
-use JoeDixon\Translation\Exceptions\LanguageExistsException;
-use JoeDixon\Translation\Language;
-use JoeDixon\Translation\Translation as TranslationModel;
+use Arm092\Translation\Exceptions\LanguageExistsException;
+use Arm092\Translation\Language;
+use Arm092\Translation\Translation as TranslationModel;
 use Throwable;
 
 class Database extends Translation implements DriverInterface

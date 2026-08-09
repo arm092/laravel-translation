@@ -1,9 +1,9 @@
 <?php
 
-namespace JoeDixon\Translation;
+namespace Arm092\Translation;
 
 use Illuminate\Contracts\Translation\Loader;
-use JoeDixon\Translation\Drivers\Translation;
+use Arm092\Translation\Drivers\Translation;
 
 class ContractDatabaseLoader implements Loader
 {

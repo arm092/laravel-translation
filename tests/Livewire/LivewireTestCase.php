@@ -1,10 +1,10 @@
 <?php
 
-namespace JoeDixon\Translation\Tests\Livewire;
+namespace Arm092\Translation\Tests\Livewire;
 
-use JoeDixon\Translation\Support\Frontend;
-use JoeDixon\Translation\TranslationBindingsServiceProvider;
-use JoeDixon\Translation\TranslationServiceProvider;
+use Arm092\Translation\Support\Frontend;
+use Arm092\Translation\TranslationBindingsServiceProvider;
+use Arm092\Translation\TranslationServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase;
 

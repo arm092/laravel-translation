@@ -1,10 +1,10 @@
 <?php
 
-namespace JoeDixon\Translation;
+namespace Arm092\Translation;
 
 use Illuminate\Translation\TranslationServiceProvider as ServiceProvider;
 use Illuminate\Translation\Translator;
-use JoeDixon\Translation\Drivers\Translation;
+use Arm092\Translation\Drivers\Translation;
 
 class TranslationBindingsServiceProvider extends ServiceProvider
 {

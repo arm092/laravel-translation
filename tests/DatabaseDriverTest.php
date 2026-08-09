@@ -1,17 +1,17 @@
 <?php
 
-namespace JoeDixon\Translation\Tests;
+namespace Arm092\Translation\Tests;
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
-use JoeDixon\Translation\Drivers\Translation;
-use JoeDixon\Translation\Events\TranslationAdded;
-use JoeDixon\Translation\Exceptions\LanguageExistsException;
-use JoeDixon\Translation\Language;
-use JoeDixon\Translation\Translation as TranslationModel;
-use JoeDixon\Translation\TranslationBindingsServiceProvider;
-use JoeDixon\Translation\TranslationServiceProvider;
+use Arm092\Translation\Drivers\Translation;
+use Arm092\Translation\Events\TranslationAdded;
+use Arm092\Translation\Exceptions\LanguageExistsException;
+use Arm092\Translation\Language;
+use Arm092\Translation\Translation as TranslationModel;
+use Arm092\Translation\TranslationBindingsServiceProvider;
+use Arm092\Translation\TranslationServiceProvider;
 use Orchestra\Testbench\TestCase;
 
 class DatabaseDriverTest extends TestCase

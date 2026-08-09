@@ -5,11 +5,7 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Joe Dixon",
-            "email": "hello@joedixon.co.uk"
-        },
-        {
-            "name": "Arman Khachatryan",
+            "name": "Arm092",
             "email": "arman.khachatryan@apricode.am"
         }
     ],
@@ -27,12 +23,12 @@
     },
     "autoload": {
         "psr-4": {
-            "JoeDixon\\Translation\\": "src"
+            "Arm092\\Translation\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "JoeDixon\\Translation\\Tests\\": "tests"
+            "Arm092\\Translation\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -42,8 +38,8 @@
     "extra": {
         "laravel": {
             "providers": [
-                "JoeDixon\\Translation\\TranslationServiceProvider",
-                "JoeDixon\\Translation\\TranslationBindingsServiceProvider"
+                "Arm092\\Translation\\TranslationServiceProvider",
+                "Arm092\\Translation\\TranslationBindingsServiceProvider"
             ]
         }
     },

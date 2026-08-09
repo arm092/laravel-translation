@@ -1,6 +1,6 @@
 <?php
 
-namespace JoeDixon\Translation;
+namespace Arm092\Translation;
 
 use Illuminate\Filesystem\Filesystem;
 

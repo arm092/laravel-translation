@@ -1,10 +1,10 @@
 <?php
 
-namespace JoeDixon\Translation\Actions;
+namespace Arm092\Translation\Actions;
 
 use Illuminate\Support\Facades\Event;
-use JoeDixon\Translation\Drivers\Translation;
-use JoeDixon\Translation\Events\TranslationAdded;
+use Arm092\Translation\Drivers\Translation;
+use Arm092\Translation\Events\TranslationAdded;
 
 final class WriteTranslation
 {

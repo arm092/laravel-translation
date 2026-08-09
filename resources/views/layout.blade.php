@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-@inject('translationFrontend', 'JoeDixon\Translation\Support\Frontend')
+@inject('translationFrontend', 'Arm092\Translation\Support\Frontend')
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,13 +11,13 @@
 </head>
 <body>
     
-    <div id="app">
-        
+    <div id="app" class="app-frame">
         @include('translation::nav')
-        @include('translation::notifications')
-        
-        @yield('body')
-        
+
+        <main class="app-main">
+            @include('translation::notifications')
+            @yield('body')
+        </main>
     </div>
     
     @if($translationFrontend->usesLivewire())

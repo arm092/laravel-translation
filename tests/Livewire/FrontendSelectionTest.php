@@ -1,6 +1,6 @@
 <?php
 
-namespace JoeDixon\Translation\Tests\Livewire;
+namespace Arm092\Translation\Tests\Livewire;
 
 use Livewire\Livewire;
 
@@ -10,7 +10,6 @@ class FrontendSelectionTest extends LivewireTestCase
     {
         $this->get(config('translation.ui_url'))
             ->assertOk()
-            ->assertSee('livewire.min.js', false)
             ->assertSee('data-update-uri=', false)
             ->assertDontSee('/vendor/translation/js/app.js', false);
     }

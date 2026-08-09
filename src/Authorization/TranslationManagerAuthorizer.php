@@ -1,6 +1,6 @@
 <?php
 
-namespace JoeDixon\Translation\Authorization;
+namespace Arm092\Translation\Authorization;
 
 use Illuminate\Support\Facades\Gate;
 

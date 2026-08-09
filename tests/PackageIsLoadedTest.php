@@ -1,9 +1,9 @@
 <?php
 
-namespace JoeDixon\Translation\Tests;
+namespace Arm092\Translation\Tests;
 
-use JoeDixon\Translation\TranslationBindingsServiceProvider;
-use JoeDixon\Translation\TranslationServiceProvider;
+use Arm092\Translation\TranslationBindingsServiceProvider;
+use Arm092\Translation\TranslationServiceProvider;
 use Orchestra\Testbench\TestCase;
 
 class PackageIsLoadedTest extends TestCase

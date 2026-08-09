@@ -1,15 +1,15 @@
 <?php
 
-namespace JoeDixon\Translation\Livewire;
+namespace Arm092\Translation\Livewire;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use JoeDixon\Translation\Actions\WriteTranslation;
-use JoeDixon\Translation\Authorization\TranslationManagerAuthorizer;
-use JoeDixon\Translation\Drivers\Translation;
-use JoeDixon\Translation\Support\TranslationInputRules;
+use Arm092\Translation\Actions\WriteTranslation;
+use Arm092\Translation\Authorization\TranslationManagerAuthorizer;
+use Arm092\Translation\Drivers\Translation;
+use Arm092\Translation\Support\TranslationInputRules;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 

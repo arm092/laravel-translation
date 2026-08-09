@@ -1,37 +1,29 @@
 @extends('translation::layout')
-@inject('translationFrontend', 'JoeDixon\Translation\Support\Frontend')
+@inject('translationFrontend', 'Arm092\Translation\Support\Frontend')
 
 @section('body')
 
-    <form action="{{ route('languages.translations.index', ['language' => $language]) }}" method="get">
-
-        <div class="panel">
-
-            <div class="panel-header">
-
-                {{ __('translation::translation.translations') }}
-
-                <div class="flex flex-grow justify-end items-center">
-
-                    @include('translation::forms.search', ['name' => 'filter', 'value' => Request::get('filter')])
-
-                    @include('translation::forms.select', ['name' => 'language', 'items' => $languages, 'submit' => true, 'selected' => $language])
-
-                    <div class="sm:hidden lg:flex items-center">
-
-                    @include('translation::forms.select', ['name' => 'group', 'items' => $groups, 'submit' => true, 'selected' => Request::get('group'), 'optional' => true])
-                    
-                    <a href="{{ route('languages.translations.create', $language) }}" class="button">
-                        {{ __('translation::translation.add') }}
-                    </a>
-                
-                </div>
-
-                </div>
-
+    <section class="page">
+        <div class="page-heading">
+            <div>
+                <h1>{{ __('translation::translation.translations') }}</h1>
+                <span class="locale-code">{{ $language }}</span>
             </div>
 
-            <div class="panel-body">
+            <a href="{{ route('languages.translations.create', $language) }}" class="button button-primary">
+                {{ __('translation::translation.add_translation') }}
+            </a>
+        </div>
+
+        <form action="{{ route('languages.translations.index', ['language' => $language]) }}" method="get">
+            <div class="filter-bar">
+                @include('translation::forms.search', ['name' => 'filter', 'value' => Request::get('filter')])
+                @include('translation::forms.select', ['name' => 'language', 'items' => $languages, 'submit' => true, 'selected' => $language])
+                @include('translation::forms.select', ['name' => 'group', 'items' => $groups, 'submit' => true, 'selected' => Request::get('group'), 'optional' => true])
+            </div>
+
+            <div class="panel data-surface">
+                <div class="panel-body translations-table">
 
                 @if(count($translations))
 
@@ -92,10 +84,9 @@
 
                 @endif
 
+                </div>
             </div>
-
-        </div>
-
-    </form>
+        </form>
+    </section>
 
 @endsection
