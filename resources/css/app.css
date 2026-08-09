@@ -18,54 +18,118 @@
         display: none !important;
     }
 
+    html {
+        @apply bg-paper;
+    }
+
     body {
-        @apply m-0 min-h-screen bg-paper text-ink antialiased;
+        @apply m-0 min-h-screen bg-paper font-sans text-ink antialiased;
     }
 
     a {
-        @apply text-primary underline-offset-4 hover:underline;
+        @apply text-primary underline-offset-4;
     }
 
     button,
     input,
     select,
     textarea {
-        @apply focus:outline-none focus:ring-2 focus:ring-info;
+        @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-info focus-visible:ring-offset-2 focus-visible:ring-offset-paper;
+    }
+
+    fieldset {
+        @apply m-0 min-w-0 border-0 p-0;
     }
 }
 
 @layer components {
+    .app-frame {
+        @apply min-h-screen;
+    }
+
+    .app-main {
+        @apply w-full;
+    }
+
     .header {
-        @apply flex h-16 w-full items-center border-b border-primary bg-graphite text-paper;
+        @apply sticky top-0 z-20 w-full border-b border-primary bg-graphite text-paper;
+    }
+
+    .header-inner {
+        @apply mx-auto flex min-h-16 w-full max-w-7xl items-stretch justify-between px-6;
+    }
+
+    .header-brand {
+        @apply flex items-center text-lg font-bold tracking-tight text-white no-underline;
     }
 
     .header ul {
-        @apply flex list-none;
+        @apply m-0 flex list-none items-stretch p-0;
     }
 
     .header li {
-        @apply px-4;
+        @apply flex items-stretch;
     }
 
-    .header a {
-        @apply flex items-center text-paper no-underline opacity-80 hover:text-primary hover:opacity-100;
+    .header li a {
+        @apply relative flex items-center gap-2 px-4 text-sm font-semibold text-paper no-underline opacity-70 transition hover:text-white hover:opacity-100;
     }
 
-    .header a.active {
+    .header li a::after {
+        content: '';
+        @apply absolute right-4 bottom-0 left-4 h-0.5 bg-transparent;
+    }
+
+    .header li a.active {
         @apply text-primary opacity-100;
     }
 
+    .header li a.active::after {
+        @apply bg-primary;
+    }
+
+    .page {
+        @apply mx-auto w-full max-w-7xl px-6 py-10;
+    }
+
+    .page-heading {
+        @apply mb-8 flex items-center justify-between gap-6;
+    }
+
+    .page-heading > div {
+        @apply flex items-center gap-3;
+    }
+
+    .page-heading > .page-heading-copy {
+        @apply flex-col items-start gap-1;
+    }
+
+    .page-heading h1 {
+        @apply m-0 text-3xl font-bold tracking-tight text-ink;
+    }
+
+    .page-subtitle {
+        @apply m-0 text-sm text-graphite;
+    }
+
     .panel {
-        @apply m-6 rounded border border-graphite bg-white text-graphite;
-        box-shadow: 0 0.25rem 1rem color-mix(in srgb, var(--color-ink) 16%, transparent);
+        @apply overflow-hidden rounded-xl border bg-white text-graphite;
+        border-color: color-mix(in srgb, var(--color-graphite) 22%, transparent);
+        box-shadow: 0 0.75rem 2.5rem color-mix(in srgb, var(--color-ink) 7%, transparent);
+    }
+
+    .panel-narrow {
+        @apply max-w-2xl;
     }
 
     .panel-header {
-        @apply flex items-center border-b border-graphite p-4 text-lg font-light;
+        @apply flex items-center border-b p-5 text-lg font-bold;
+        border-color: color-mix(in srgb, var(--color-graphite) 18%, transparent);
     }
 
     .panel-footer {
-        @apply border-t border-graphite bg-paper p-4;
+        @apply border-t bg-paper p-5;
+        border-color: color-mix(in srgb, var(--color-graphite) 18%, transparent);
     }
 
     .panel-body {
@@ -73,50 +137,76 @@
     }
 
     .panel-body table {
-        @apply w-full table-fixed border-collapse;
+        @apply w-full border-collapse;
     }
 
     .panel-body th,
     .panel-body td {
-        @apply break-words p-4 text-left align-top;
+        @apply px-6 py-5 text-left align-middle;
     }
 
     .panel-body th {
-        @apply text-graphite;
+        @apply text-xs font-bold tracking-wider text-graphite uppercase;
+        background: color-mix(in srgb, var(--color-paper) 78%, var(--color-white));
     }
 
     .panel-body td {
-        @apply font-light;
+        @apply text-sm text-ink;
     }
 
     .panel-body tr {
-        @apply border-b border-graphite;
+        @apply border-b;
+        border-color: color-mix(in srgb, var(--color-graphite) 16%, transparent);
     }
 
-    .panel-body thead tr,
-    .panel-body tbody tr:nth-child(even) {
-        background: color-mix(in srgb, var(--color-paper) 86%, var(--color-white));
+    .panel-body tbody tr {
+        @apply transition-colors;
     }
 
     .panel-body tbody tr:hover {
-        background: color-mix(in srgb, var(--color-info) 18%, var(--color-white));
+        background: color-mix(in srgb, var(--color-info) 12%, var(--color-white));
     }
 
     .panel-body tbody tr:last-child {
         @apply border-0;
     }
 
+    .language-table th:last-child,
+    .language-table td:last-child {
+        @apply text-right;
+    }
+
+    .locale-code {
+        @apply inline-flex min-h-7 items-center rounded-md border px-2.5 font-mono text-xs font-semibold text-graphite;
+        border-color: color-mix(in srgb, var(--color-graphite) 18%, transparent);
+        background: color-mix(in srgb, var(--color-paper) 80%, var(--color-white));
+    }
+
+    .row-action {
+        @apply inline-flex min-h-10 items-center rounded-lg px-3 text-sm font-bold text-graphite no-underline transition hover:bg-primary hover:text-ink;
+    }
+
+    .empty-state {
+        @apply flex min-h-48 items-center justify-center px-6 py-12 text-center text-graphite;
+    }
+
     .button {
-        @apply rounded border border-graphite bg-white px-4 py-2 text-sm font-bold text-graphite no-underline hover:border-primary hover:text-primary;
+        @apply inline-flex min-h-11 cursor-pointer items-center justify-center rounded-lg border px-4 py-2 text-sm font-bold text-graphite no-underline transition;
+        border-color: color-mix(in srgb, var(--color-graphite) 30%, transparent);
+        background: var(--color-white);
+    }
+
+    .button:hover {
+        @apply border-primary text-primary;
     }
 
     .button-primary {
-        @apply border-primary bg-primary text-ink hover:text-ink;
-        background-color: var(--color-primary);
+        @apply border-primary bg-primary text-ink;
     }
 
     .button-primary:hover {
-        background: color-mix(in srgb, var(--color-primary) 84%, var(--color-ink));
+        @apply text-ink;
+        background: color-mix(in srgb, var(--color-primary) 82%, var(--color-paper));
     }
 
     .input-group {
@@ -124,11 +214,16 @@
     }
 
     .input-group label {
-        @apply mb-2 block text-xs font-bold uppercase tracking-wide text-graphite;
+        @apply mb-2 block text-xs font-bold tracking-wider text-graphite uppercase;
     }
 
     .input-group input {
-        @apply mb-3 block w-full appearance-none rounded border border-graphite bg-paper px-4 py-3 leading-tight text-graphite;
+        @apply block min-h-12 w-full appearance-none rounded-lg border bg-white px-4 py-3 text-base leading-tight text-ink transition;
+        border-color: color-mix(in srgb, var(--color-graphite) 30%, transparent);
+    }
+
+    .input-group input:hover {
+        @apply border-primary;
     }
 
     .input-group input.error {
@@ -136,32 +231,59 @@
     }
 
     .input-group .error-text {
-        @apply text-xs italic text-error;
+        @apply mt-2 text-xs font-semibold text-error;
     }
 
     .select-group {
-        @apply relative mr-2 last:mr-0;
+        @apply relative min-w-36;
     }
 
     .select-group select {
-        @apply block max-w-xs appearance-none rounded border border-graphite bg-white py-2 pr-8 pl-4 text-base leading-tight font-light text-graphite uppercase;
+        @apply block min-h-11 w-full cursor-pointer rounded-lg border bg-white py-2 pr-10 pl-3 text-sm font-semibold text-graphite transition;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: none;
+        border-color: color-mix(in srgb, var(--color-graphite) 30%, transparent);
+    }
+
+    .select-group select::-ms-expand {
+        display: none;
+    }
+
+    .select-group select:hover {
+        @apply border-primary;
     }
 
     .select-group .caret {
-        @apply pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-graphite;
+        @apply pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-graphite;
     }
 
     .select-group .caret svg {
         @apply h-4 w-4 fill-current;
     }
 
+    .filter-bar {
+        @apply mb-5 flex items-center gap-3 rounded-xl border bg-white p-4;
+        border-color: color-mix(in srgb, var(--color-graphite) 20%, transparent);
+    }
+
     .search {
-        @apply relative mx-2 flex-1;
-        max-width: 31.25rem;
+        @apply relative min-w-64 flex-1;
     }
 
     .search-input {
-        @apply w-full rounded border border-graphite bg-paper px-4 py-2 font-light text-graphite transition;
+        @apply min-h-11 w-full rounded-lg border bg-white px-4 py-2 text-sm text-ink transition;
+        border-color: color-mix(in srgb, var(--color-graphite) 30%, transparent);
+    }
+
+    .search-input:hover {
+        @apply border-primary;
+    }
+
+    .translations-table table {
+        min-width: 60rem;
+        table-layout: fixed;
     }
 
     .translation-editor {
@@ -169,50 +291,101 @@
     }
 
     .translation-editor button {
-        @apply mt-1 shrink-0 cursor-pointer text-graphite;
+        @apply mt-1 shrink-0 cursor-pointer text-graphite transition hover:text-primary;
     }
 
     .translation-editor textarea {
-        @apply h-auto w-full resize-none border-0 bg-transparent p-0 font-light text-graphite;
+        @apply h-auto w-full resize-none border-0 bg-transparent p-0 text-sm text-graphite;
     }
 
     .translation-editor textarea.active {
-        @apply h-32 rounded border border-graphite bg-white p-2;
+        @apply h-32 rounded-lg border bg-white p-3;
+        border-color: color-mix(in srgb, var(--color-graphite) 30%, transparent);
+    }
+
+    .status-message {
+        @apply mx-auto mt-6 flex w-[calc(100%-3rem)] max-w-7xl items-center rounded-lg border px-4 py-3 text-sm font-bold text-ink;
     }
 
     .status-success {
-        @apply bg-success p-6 text-ink;
+        @apply border-success bg-success;
     }
 
     .status-error {
-        @apply bg-error p-6 text-ink;
+        @apply border-error bg-error;
     }
 
     .status-info {
-        @apply bg-info p-6 text-ink;
+        @apply border-info bg-info;
     }
 
-    @media (max-width: 40rem) {
-        .panel {
-            @apply m-4;
+    @media (max-width: 48rem) {
+        .header-inner {
+            @apply min-h-0 flex-col items-stretch px-4 pt-4;
         }
 
-        .panel-header,
-        .panel-header > .flex {
-            @apply flex-wrap gap-2;
+        .header-brand {
+            @apply pb-3;
         }
 
-        .panel-header > .flex {
-            @apply w-full;
+        .header ul {
+            @apply overflow-x-auto;
+        }
+
+        .header li a {
+            @apply min-h-12 px-3;
+        }
+
+        .header li a::after {
+            @apply right-3 left-3;
+        }
+
+        .page {
+            @apply px-4 py-7;
+        }
+
+        .page-heading {
+            @apply mb-6 items-start;
+        }
+
+        .page-heading h1 {
+            @apply text-2xl;
+        }
+
+        .filter-bar {
+            @apply flex-wrap;
         }
 
         .search {
-            @apply order-first mx-0 w-full basis-full;
-            max-width: none;
+            @apply w-full min-w-full basis-full;
         }
 
-        .panel-body table {
-            min-width: 48rem;
+        .select-group {
+            @apply min-w-0 flex-1;
+        }
+
+        .panel-body th,
+        .panel-body td {
+            @apply px-4 py-4;
+        }
+
+        .language-table th:nth-child(2),
+        .language-table td:nth-child(2) {
+            @apply hidden;
+        }
+
+        .row-action {
+            @apply px-2;
+        }
+    }
+
+    @media (max-width: 32rem) {
+        .page-heading {
+            @apply flex-col;
+        }
+
+        .page-heading .button {
+            @apply w-full;
         }
     }
 }

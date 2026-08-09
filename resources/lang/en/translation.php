@@ -2,6 +2,8 @@
 
 return [
     'languages' => 'Languages',
+    'no_languages' => 'No languages have been added yet.',
+    'language_management_hint' => 'Manage the languages available in your application.',
     'language' => 'Language',
     'type' => 'Type',
     'file' => 'File',

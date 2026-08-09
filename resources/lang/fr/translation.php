@@ -20,6 +20,8 @@ return [
     'language_key_added' => 'Nouvelle clé dans la langue ajoutée avec succès 👏',
     'language_name' => 'Nom',
     'languages' => 'Langues',
+    'no_languages' => 'Aucune langue n’a encore été ajoutée.',
+    'language_management_hint' => 'Gérez les langues disponibles dans votre application.',
     'locale' => 'Locale',
     'namespace' => 'Namespace',
     'namespace_label' => 'Namespace (Optionnel)',

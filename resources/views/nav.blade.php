@@ -1,8 +1,10 @@
-<nav class="header">
+<nav class="header" aria-label="{{ config('app.name') }}">
+    <div class="header-inner">
+        <a href="{{ route('languages.index') }}" class="header-brand">
+            <span>{{ config('app.name') }}</span>
+        </a>
 
-    <h1 class="text-lg px-6">{{ config('app.name') }}</h1>
-
-    <ul class="flex-grow justify-end pr-2">
+        <ul>
         <li>
             <a href="{{ route('languages.index') }}" class="{{ request()->is(config('translation.ui_url')) || request()->is(config('translation.ui_url').'/create') ? 'active' : '' }}">
                 @include('translation::icons.globe')
@@ -15,6 +17,6 @@
                 {{ __('translation::translation.translations') }}
             </a>
         </li>
-    </ul>
-
+        </ul>
+    </div>
 </nav>

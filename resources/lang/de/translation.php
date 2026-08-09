@@ -2,6 +2,8 @@
 
 return [
     'languages' => 'Sprachen',
+    'no_languages' => 'Es wurden noch keine Sprachen hinzugefügt.',
+    'language_management_hint' => 'Verwalten Sie die in Ihrer Anwendung verfügbaren Sprachen.',
     'language' => 'Sprache',
     'type' => 'Typ',
     'file' => 'Datei',
