@@ -3,7 +3,7 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true"
-         cacheDirectory=".phpunit.cache">
+         cacheDirectory=".phpunit.cache/livewire3">
   <source>
     <include>
       <directory suffix=".php">src</directory>
@@ -13,10 +13,8 @@
     </exclude>
   </source>
   <testsuites>
-    <testsuite name="Feature">
-      <directory suffix="Test.php">tests</directory>
-      <exclude>tests/Livewire</exclude>
-      <exclude>tests/LivewireThree</exclude>
+    <testsuite name="Livewire 3 fallback">
+      <directory suffix="Test.php">tests/LivewireThree</directory>
     </testsuite>
   </testsuites>
   <php>
