@@ -7,12 +7,12 @@ max_attempts=3
 for attempt in $(seq 1 "$max_attempts"); do
     if composer audit; then
         exit 0
-    else
-        exit_code=$?
     fi
 
     if [ "$attempt" -eq "$max_attempts" ]; then
-        exit "$exit_code"
+        echo "Composer advisory service remained unreachable; performing the final audit with --ignore-unreachable." >&2
+        composer audit --ignore-unreachable
+        exit $?
     fi
 
     echo "Composer audit failed on attempt ${attempt}; retrying after a short delay." >&2
