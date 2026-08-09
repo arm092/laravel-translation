@@ -10,7 +10,8 @@ class FrontendSelectionTest extends LivewireTestCase
     {
         $this->get(config('translation.ui_url'))
             ->assertOk()
-            ->assertSee('<!-- Livewire Scripts -->', false)
+            ->assertSee('livewire.min.js', false)
+            ->assertSee('data-update-uri=', false)
             ->assertDontSee('/vendor/translation/js/app.js', false);
     }
 
