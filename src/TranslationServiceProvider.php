@@ -19,7 +19,7 @@ class TranslationServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         $this->loadViews();
 
@@ -33,7 +33,6 @@ class TranslationServiceProvider extends ServiceProvider
 
         $this->loadTranslations();
 
-        $this->registerHelpers();
     }
 
     /**
@@ -41,7 +40,7 @@ class TranslationServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->mergeConfiguration();
 
@@ -55,7 +54,7 @@ class TranslationServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function loadViews()
+    private function loadViews(): void
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'translation');
 
@@ -69,7 +68,7 @@ class TranslationServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function registerRoutes()
+    private function registerRoutes(): void
     {
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
     }
@@ -79,7 +78,7 @@ class TranslationServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function publishConfiguration()
+    private function publishConfiguration(): void
     {
         $this->publishes([
             __DIR__.'/../config/translation.php' => config_path('translation.php'),
@@ -91,7 +90,7 @@ class TranslationServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function mergeConfiguration()
+    private function mergeConfiguration(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/translation.php', 'translation');
     }
@@ -101,7 +100,7 @@ class TranslationServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function publishAssets()
+    private function publishAssets(): void
     {
         $this->publishes([
             __DIR__.'/../public/assets' => public_path('vendor/translation'),
@@ -113,7 +112,7 @@ class TranslationServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function loadMigrations()
+    private function loadMigrations(): void
     {
         if (config('translation.driver') !== 'database') {
             return;
@@ -127,12 +126,12 @@ class TranslationServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function loadTranslations()
+    private function loadTranslations(): void
     {
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'translation');
 
         $this->publishes([
-            __DIR__.'/../resources/lang' => resource_path('lang/vendor/translation'),
+            __DIR__.'/../resources/lang' => $this->app->langPath('vendor/translation'),
         ]);
     }
 
@@ -141,7 +140,7 @@ class TranslationServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    private function registerCommands()
+    private function registerCommands(): void
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
@@ -156,21 +155,11 @@ class TranslationServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register package helper functions.
-     *
-     * @return void
-     */
-    private function registerHelpers()
-    {
-        require __DIR__.'/../resources/helpers.php';
-    }
-
-    /**
      * Register package bindings in the container.
      *
      * @return void
      */
-    private function registerContainerBindings()
+    private function registerContainerBindings(): void
     {
         $this->app->singleton(Scanner::class, function () {
             $config = $this->app['config']['translation'];
