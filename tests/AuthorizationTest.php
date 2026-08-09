@@ -1,10 +1,10 @@
 <?php
 
-namespace JoeDixon\Translation\Tests;
+namespace Arm092\Translation\Tests;
 
 use Illuminate\Support\Facades\Gate;
-use JoeDixon\Translation\TranslationBindingsServiceProvider;
-use JoeDixon\Translation\TranslationServiceProvider;
+use Arm092\Translation\TranslationBindingsServiceProvider;
+use Arm092\Translation\TranslationServiceProvider;
 use Orchestra\Testbench\TestCase;
 
 class AuthorizationTest extends TestCase

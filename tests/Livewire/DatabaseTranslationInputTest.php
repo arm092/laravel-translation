@@ -1,11 +1,11 @@
 <?php
 
-namespace JoeDixon\Translation\Tests\Livewire;
+namespace Arm092\Translation\Tests\Livewire;
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use JoeDixon\Translation\Language;
-use JoeDixon\Translation\Livewire\TranslationInput;
-use JoeDixon\Translation\Translation;
+use Arm092\Translation\Language;
+use Arm092\Translation\Livewire\TranslationInput;
+use Arm092\Translation\Translation;
 use Livewire\Livewire;
 
 class DatabaseTranslationInputTest extends LivewireTestCase
@@ -40,7 +40,7 @@ class DatabaseTranslationInputTest extends LivewireTestCase
             'value' => 'Hola',
         ]);
 
-        $driver = $this->app->make(\JoeDixon\Translation\Drivers\Translation::class);
+        $driver = $this->app->make(\Arm092\Translation\Drivers\Translation::class);
         $this->assertSame('Hola', $driver->getGroupTranslationsFor('es')->get('messages')->get('hello'));
 
         Livewire::test(TranslationInput::class, [

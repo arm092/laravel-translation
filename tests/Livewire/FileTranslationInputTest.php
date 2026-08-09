@@ -1,14 +1,14 @@
 <?php
 
-namespace JoeDixon\Translation\Tests\Livewire;
+namespace Arm092\Translation\Tests\Livewire;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
-use JoeDixon\Translation\Drivers\Translation;
-use JoeDixon\Translation\Events\TranslationAdded;
-use JoeDixon\Translation\Livewire\TranslationInput;
+use Arm092\Translation\Drivers\Translation;
+use Arm092\Translation\Events\TranslationAdded;
+use Arm092\Translation\Livewire\TranslationInput;
 use Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException;
 use Livewire\Livewire;
 
@@ -181,7 +181,7 @@ class FileTranslationInputTest extends LivewireTestCase
     {
         $this->get(config('translation.ui_url').'/es/translations')
             ->assertOk()
-            ->assertSee('livewire.min.js', false)
+            ->assertSee('<!-- Livewire Scripts -->', false)
             ->assertSee('data-update-uri=', false)
             ->assertDontSee('/vendor/translation/js/app.js', false);
     }

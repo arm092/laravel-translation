@@ -1,11 +1,11 @@
 <?php
 
-namespace JoeDixon\Translation\Tests\LivewireThree;
+namespace Arm092\Translation\Tests\LivewireThree;
 
 use Composer\InstalledVersions;
-use JoeDixon\Translation\Support\Frontend;
-use JoeDixon\Translation\TranslationBindingsServiceProvider;
-use JoeDixon\Translation\TranslationServiceProvider;
+use Arm092\Translation\Support\Frontend;
+use Arm092\Translation\TranslationBindingsServiceProvider;
+use Arm092\Translation\TranslationServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase;
 
@@ -32,6 +32,6 @@ class FrontendFallbackTest extends TestCase
         $this->get(config('translation.ui_url'))
             ->assertOk()
             ->assertSee('/vendor/translation/js/app.js', false)
-            ->assertDontSee('livewire.min.js', false);
+            ->assertDontSee('<!-- Livewire Scripts -->', false);
     }
 }
