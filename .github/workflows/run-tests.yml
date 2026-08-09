@@ -67,7 +67,7 @@ jobs:
 
       - name: Audit dependencies
         continue-on-error: ${{ matrix.allow_upstream_advisories }}
-        run: composer audit
+        run: bash scripts/composer-audit.sh
 
       - name: Check PHP syntax
         run: find src config database routes tests -name '*.php' -print0 | xargs -0 -n1 php -l
@@ -133,7 +133,7 @@ jobs:
 
       - name: Audit dependencies
         continue-on-error: ${{ matrix.allow_upstream_advisories }}
-        run: composer audit
+        run: bash scripts/composer-audit.sh
 
       - name: Check PHP syntax
         run: find src config database routes tests -name '*.php' -print0 | xargs -0 -n1 php -l
@@ -168,7 +168,7 @@ jobs:
         run: composer validate --strict --no-check-lock
 
       - name: Audit dependencies
-        run: composer audit
+        run: bash scripts/composer-audit.sh
 
       - name: Check PHP syntax
         run: find src config database routes tests -name '*.php' -print0 | xargs -0 -n1 php -l
