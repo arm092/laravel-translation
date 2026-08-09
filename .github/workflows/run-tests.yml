@@ -1,24 +1,110 @@
 name: Tests
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  test:
+  php:
+    name: Laravel ${{ matrix.laravel }} / PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
-
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - laravel: 10
+            php: '8.1'
+            testbench: '^8.0'
+            phpunit: '^10.5.62'
+            allow_upstream_advisories: true
+          - laravel: 11
+            php: '8.2'
+            testbench: '^9.0'
+            phpunit: '^11.5.50'
+            allow_upstream_advisories: true
+          - laravel: 12
+            php: '8.2'
+            testbench: '^10.0'
+            phpunit: '^11.5.50'
+            allow_upstream_advisories: false
+          - laravel: 13-minimum
+            php: '8.3'
+            testbench: '^11.0'
+            phpunit: '^12.5.8'
+            prefer: '--prefer-lowest'
+            allow_upstream_advisories: true
+          - laravel: 13-latest
+            php: '8.5'
+            testbench: '^11.0'
+            phpunit: '^13.0.3'
+            allow_upstream_advisories: false
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v7
 
-      - name: Setup PHP
+      - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.0
+          php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
           coverage: none
 
-      - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction
+      - name: Select matrix dependencies
+        run: composer require --dev --no-update "orchestra/testbench:${{ matrix.testbench }}" "phpunit/phpunit:${{ matrix.phpunit }}"
 
-      - name: Execute tests
+      - name: Allow resolution before the explicit audit
+        run: composer config policy.advisories.block false
+
+      - name: Resolve dependencies
+        run: composer update --prefer-dist --no-interaction --with-all-dependencies ${{ matrix.prefer }}
+
+      - name: Validate package metadata
+        run: composer validate --strict --no-check-lock
+
+      - name: Audit dependencies
+        continue-on-error: ${{ matrix.allow_upstream_advisories }}
+        run: composer audit
+
+      - name: Check PHP syntax
+        run: find src config database routes tests -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Run PHPUnit
         run: vendor/bin/phpunit
+
+  frontend:
+    name: Frontend / Node 22
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=low
+
+      - name: Run JavaScript tests
+        run: npm test
+
+      - name: Validate Apricode palette
+        run: npm run check:palette
+
+      - name: Build production assets
+        run: npm run build
+
+      - name: Verify committed assets
+        run: |
+          git diff --exit-code -- package-lock.json public/assets/js/app.js
+          test -s public/assets/css/main.css
+          grep -qi -- '--color-primary:#fd971f' public/assets/css/main.css

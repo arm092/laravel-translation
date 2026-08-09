@@ -1,203 +1,257 @@
 <div align="center">
-  
+
 ![Laravel Translation](logo.png)
-  
-Translation management for your Laravel application.
+
+# Laravel Translation
+
+Manage Laravel file or database translations through Artisan and a web interface.
 
 ![Laravel Translation UI](translation.png)
 
-![GitHub](https://img.shields.io/github/checks-status/arm092/laravel-translation/master?style=for-the-badge)
-![GitHub](https://img.shields.io/github/license/arm092/laravel-translation.svg?style=for-the-badge)
+![GitHub checks](https://img.shields.io/github/checks-status/arm092/laravel-translation/master?style=for-the-badge)
+![License](https://img.shields.io/github/license/arm092/laravel-translation.svg?style=for-the-badge)
 
 </div>
 
-------
+## What the package does
 
-## About Laravel Translation
+Laravel Translation discovers, creates, edits, and synchronizes translations while keeping the normal Laravel APIs (`__()`, `trans()`, and `@lang`) available to application code.
 
-Laravel Translation is a package for Laravel which allows you full control
-over your translations when using [Laravel's
-localization](https://laravel.com/docs/11.x/localization) functionality.
+- Manage PHP array translations, JSON translations, and vendor namespaces.
+- Store translations in Laravel language files or in a database.
+- Edit translations in a responsive web manager with inline save states.
+- Scan configured application paths for missing keys.
+- Manage and synchronize translations through Artisan commands.
 
-The package allows you to manage your translations using either the native file
-based translations, but also provides a database driver which is useful in
-multi-server setups.
+## Requirements and compatibility
 
-It exposes a user interface allowing you to update existing and add new
-translations to your application.
+Version 4 is a major release because Laravel 8/9, PHP 8.0, legacy factories, Laravel Mix, Vue, and the old frontend toolchain are no longer supported.
 
-Below are a full list of features:
+| Laravel | PHP | Laravel Translation |
+| --- | --- | --- |
+| 10 | 8.1+ | 4.x |
+| 11 | 8.2+ | 4.x |
+| 12 | 8.2+ | 4.x |
+| 13 | 8.3+ | 4.x |
 
-- File and database drivers
-- Database translation loader (automatically load translations from the database
-  when Laravel's translation retrieval methods and the database driver)
-- User interface to add new languages and add and update translations
-- Artisan commands to manage your translations
-- Scan your application for missing translations
+The package CI also tests Laravel 13 on PHP 8.5 with PHPUnit 13. If upgrading from 3.x, read [UPGRADE.md](UPGRADE.md) before changing the Composer constraint.
 
-## Version Compatibility
-
-|    Laravel    | Laravel Translation |
-| ------------- | ------------------- |
-|      6.x      |          1.x        |
-|      7.x      |          1.x        |
-|      8.x      |          2.x        |
-|      9.x      |          2.x        |
-|      10.x     |          3.x        |
-|      11.x     |          3.x        |
+Every matrix line resolves dependencies from scratch and runs Composer's security audit. The Laravel 10/11 jobs and the intentionally lowest-dependency Laravel 13 job expose audit reports without blocking compatibility tests; the normal Laravel 12 and latest Laravel 13 jobs remain release-blocking. Applications should review the report for their resolved dependency graph and apply their own risk policy.
 
 ## Installation
 
-Install the package via Composer
+Install the stable 4.x line:
 
-`composer require arm092/laravel-translation`
-
-Publish configuration and assets
-
-`php artisan vendor:publish --provider="JoeDixon\Translation\TranslationServiceProvider"`
-
-The service provider is loaded automatically using [package discovery](https://laravel.com/docs/11.x/packages#package-discovery).
-
-## Usage
-
-### Configuration
-
-The package ships with a configuration file called `translation.php` which is published to the
-config directory during installation. Below is an outline of the settings.
-
+```shell
+composer require arm092/laravel-translation:^4.0
 ```
-driver [file|database]
+
+Laravel package discovery registers both service providers automatically. Publish the configuration and compiled assets:
+
+```shell
+php artisan vendor:publish --provider="JoeDixon\Translation\TranslationServiceProvider" --tag=config
+php artisan vendor:publish --provider="JoeDixon\Translation\TranslationServiceProvider" --tag=assets
 ```
-Choose either `file` or `database`. File translations utilise Laravel's native
-file based translations and includes support for both `array` based and `json` based
-language files.
 
+The manager is then available at `/languages` by default. Published assets keep stable URLs:
+
+```text
+/vendor/translation/css/main.css
+/vendor/translation/js/app.js
 ```
-route_group_config.middleware [string|array]
+
+Run the asset publish command again with `--force` after a package upgrade. Views and package language strings can also be customized by publishing everything from the provider:
+
+```shell
+php artisan vendor:publish --provider="JoeDixon\Translation\TranslationServiceProvider"
 ```
-Apply middleware to the routes which ship with the package. For example, you may
-which to use the `auth` middleware to ensure package user interface is only
-accessible to logged in users.
 
-```
-translation_methods [array]
-```
-Choose which of Laravel's translation methods to use when searching for missing
-translation keys.
+This copies views to `resources/views/vendor/translation` and localization strings to `lang/vendor/translation`. Publish these only when application-level customization is needed, because published copies override future package improvements.
 
-```
-scan_paths [array]
-```
-Choose which paths to use when searching for missing translations. Narrowing the
-search to specific directories will result in a performance increase when
-scanning for missing translations. 
+## Configuration
 
-```
-ui_url [string]
-```
-Choose the root URL where the package user interface can be accessed. All routes
-will be prefixed by this value.
+The published `config/translation.php` is the public package configuration. After changing it in an environment that caches configuration, run `php artisan config:clear` during development or rebuild the production config cache.
 
-e.g. setting this value to `languages` will result in URLs such as `translations/{language}/translations`
-
-```
-database.languages_table
-```
-Choose the name of the languages table when using the database driver.
-
-```
-database.translations_table
-```
-Choose the name of the translations table when using the database driver.
-
-### Drivers
-
-#### File
-Utitlises Laravel's native php array and JSON based language files and exposes a
-user interface to manage the enclosed translations. Add and update languages and translations
-using either the user interface or the built-in [Artisan commands](https://laravel.com/docs/11.x/artisan).
-
-#### Database
-The database driver takes all of the functionality of Laravel's file based
-language files, but moves the storage to the database, utilising the connection
-configured for your Laravel application.
-
-It also replaces the translation loader in the container so all of Laravel's
-translation retrieval methods (`__()`, `trans()`, `@lang()`, etc) will load the
-relevant strings from the database rather than the files without the need to
-change any code in your application. It's a like for like swap.
-
-To utilise the database driver, make sure to update the database table names in
-the configuration file and run the migrations.
-
-#### Changing Drivers from File (default) to Database
-
-1. Update the driver to use database in `./config/translation.php`.
+### Driver
 
 ```php
-'driver' => 'database'
+'driver' => 'file', // file or database
 ```
 
-2. Run the migration to add translations and languages tables.
+Use `file` to edit Laravel's PHP and JSON language files directly. Use `database` when translations must be shared by multiple application servers or managed independently of a deployment artifact. The package replaces Laravel's translator loader only for the database driver; file mode keeps Laravel's native loader.
+
+### Route middleware
+
+```php
+'route_group_config' => [
+    'middleware' => ['web'],
+],
+```
+
+`middleware` accepts either a string or an array. The default `web` middleware provides sessions, CSRF protection, and validation error sharing. For production, require authentication as well:
+
+```php
+'route_group_config' => [
+    'middleware' => ['web', 'auth'],
+],
+```
+
+Other valid Laravel route-group options, such as `domain`, may be placed in `route_group_config`. The package always appends its authorization middleware to this group.
+
+### Authorization gate
+
+```php
+'authorization_gate' => null,
+```
+
+`null` preserves the historical behavior: anyone who passes the configured route middleware can use the manager. This is convenient for local upgrades but is not the recommended production setting.
+
+For production, define an application-owned gate and configure its name:
+
+```php
+// app/Providers/AppServiceProvider.php
+use App\Models\User;
+use Illuminate\Support\Facades\Gate;
+
+public function boot(): void
+{
+    Gate::define('manage-translations', function (User $user): bool {
+        return $user->is_admin;
+    });
+}
+```
+
+```php
+// config/translation.php
+'route_group_config' => [
+    'middleware' => ['web', 'auth'],
+],
+'authorization_gate' => 'manage-translations',
+```
+
+The manager calls `Gate::authorize('manage-translations')` for every web request. Laravel returns HTTP 403 when the gate denies access. The gate does not run for Artisan commands, so command execution must be protected with normal deployment and server permissions.
+
+Why both `auth` and a gate? `auth` establishes who the user is; the gate decides whether that authenticated user may change application translations. Using only `auth` would grant access to every signed-in user.
+
+### Scanner
+
+```php
+'translation_methods' => ['trans', '__'],
+'scan_paths' => [app_path(), resource_path()],
+```
+
+`translation_methods` lists function names whose string arguments are treated as translation keys. `scan_paths` limits where source scanning occurs. Keep these paths as narrow as practical to reduce scan time and avoid interpreting unrelated files.
+
+### Manager URL
+
+```php
+'ui_url' => 'languages',
+```
+
+This value is the route prefix, not a complete URL. With the default, the language list is `/languages` and an English translation page is `/languages/en/translations`. The inline-save endpoint is generated with Laravel's named `route()` helper, so domains, base paths, and URL generation settings remain consistent.
+
+### Database settings
+
+```php
+'database' => [
+    'connection' => '',
+    'languages_table' => 'languages',
+    'translations_table' => 'translations',
+],
+```
+
+An empty `connection` uses Laravel's default database connection. Supply a configured connection name to isolate translation data. The table values allow existing naming conventions or shared schemas. These settings affect the models and package migrations, so configure them before migrating.
+
+## Drivers
+
+### File driver
+
+File mode is the default and supports:
+
+- locales such as `en`, `en_US`, and `pt-BR`;
+- PHP group files such as `lang/en/validation.php`;
+- JSON files such as `lang/en.json`;
+- vendor groups such as `package::messages`;
+- dotted translation keys.
+
+Locale, namespace, and group identifiers are validated before filesystem access. Directory separators and traversal segments are rejected. The PHP process must have write permission for the application's language directory if translations will be changed through the manager or Artisan.
+
+### Database driver
+
+Set the driver, configure the connection/table names, then run the migrations:
+
+```php
+'driver' => 'database',
+```
 
 ```shell
 php artisan migrate
-```
-
-3. Run the following command and folow the prompts to synchronise the translations between drivers.
-
-```shell
 php artisan translation:sync-translations
 ```
 
-4. A few questions will be prompted which have to be answered. See the screenshot below:
+The synchronization command imports existing file translations after prompting for source and destination drivers. When database mode is active, the package registers its database-backed loader so existing Laravel translation calls need no code changes.
 
-### User interface
-Navigate to http://your-project.test/languages (update `languages` to match the
-`translation.ui_url` configuration setting) and use the interface to manage
-your translations.
+Writes are language-scoped and invalidate the package's in-memory group cache. Legacy rows with a null group are upgraded to the `single` group only for their own language.
 
-First, click on the language you wish to edit. On the subsequent page, find the
-translation you want to edit and click on the pencil icon or on the text and
-make your edits. As soon as you remove focus from the input, your translation
-will be saved, indicated by the green check icon.
+## Web manager
 
-### Artisan Commands
-The package ships with a series of Artisan commands which assist with
-translation management.
+Open the configured manager URL and select a language. Click the pencil icon or translation text, edit the value, and move focus away from the field to save. The inline editor exposes four states: unchanged, loading, saved, and error. Requests use the Fetch API, include Laravel's CSRF token, and use same-origin credentials.
 
-```
-translation:add-language
-```                  
-Add a new language to the application.
-  
-```
-translation:add-translation-key
-```            
-Add a new language key for the application.
-  
-```
-translation:list-languages
-```
-List all of the available languages in the application.
-  
-```
-translation:list-missing-translation-keys
-```
-List all of the translation keys in the app which don't have a corresponding translation.
-  
-```
-translation:sync-translations
-```             
-Synchronise translations between drivers. This is useful if you have an exisitng
-application using the native file based language files and wish to move to the
-database driver. Running this command will take all of the translations from the
-language files and insert them in to the database.
+Validation and session messages are escaped before rendering. Requests reject invalid locale, namespace, group, and key input. These checks are defense in depth; the manager should still be protected with `web`, `auth`, and an application-defined gate.
 
-```
-translation:sync-missing-translation-keys
-```
-This command will scan your project (using the paths supplied in the
-configuration file) and create all of the missing translation keys. This can be
-run for all languages or a single language.
+## Artisan commands
 
+| Command | Purpose |
+| --- | --- |
+| `translation:add-language` | Add a locale to the active driver. |
+| `translation:add-translation-key` | Add a translation key and value. |
+| `translation:list-languages` | List locales available to the active driver. |
+| `translation:list-missing-translation-keys` | Scan and display keys missing from translations. |
+| `translation:sync-translations` | Synchronize translations between file and database drivers. |
+| `translation:sync-missing-translation-keys` | Create scanner-discovered missing keys for one or all languages. |
+
+The authorization gate protects only web-manager routes and intentionally does not affect these commands.
+
+## Frontend and Apricode palette
+
+Version 4 uses Blade, Alpine.js 3, vanilla Fetch, Tailwind CSS 4, and Vite 8. Vue, Axios, Laravel Mix, and the old PostCSS/Tailwind chain were removed. Livewire is not required.
+
+Only these semantic colors are defined in the package source:
+
+| Token | Value | Use |
+| --- | --- | --- |
+| `primary` | `#FD971F` | Links, active elements, and primary actions |
+| `success` | `#A6E22E` | Successful saves and confirmations |
+| `error` | `#F92672` | Errors and destructive indicators |
+| `info` | `#66D9EF` | Informational states and focus rings |
+| `graphite` | `#272822` | Navigation, borders, and secondary text |
+| `ink` | `#060606` | Main text and text on bright status colors |
+| `paper` | `#F8F8F2` | Page background and navigation text |
+| `white` | `#FFFFFF` | Panels and form fields |
+
+Muted, hover, and border variants are derived with opacity or `color-mix()`; no additional hardcoded palette colors are introduced.
+
+Consumers normally publish the prebuilt assets. To develop the package frontend itself, use Node `^20.19` or `>=22.12`:
+
+```shell
+npm ci
+npm test
+npm run check:palette
+npm run build
+```
+
+The build writes the stable public filenames under `public/assets`, which the service provider publishes to `public/vendor/translation` in the host application.
+
+## Upgrading and troubleshooting
+
+See [UPGRADE.md](UPGRADE.md) for the complete 3.x to 4.x checklist and [CHANGELOG.md](CHANGELOG.md) for release changes.
+
+- **403 from the manager:** confirm the user is authenticated and the configured gate exists and returns `true`.
+- **Old styling or JavaScript:** republish assets with `--force`, clear Laravel caches, and invalidate any CDN/browser cache.
+- **Configuration changes ignored:** rebuild Laravel's cached configuration.
+- **File writes fail:** verify write access to `langPath()` and confirm locale/group values use supported identifiers.
+- **Database translations are missing:** confirm `driver`, connection, and table names, run migrations, then synchronize translations.
+
+## License
+
+Laravel Translation is open-source software licensed under the [MIT license](LICENSE.md).
