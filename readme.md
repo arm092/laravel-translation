@@ -34,7 +34,7 @@ Version 4 is a major release because Laravel 8/9, PHP 8.0, legacy factories, Lar
 | 12 | 8.2+ | 4.x |
 | 13 | 8.3+ | 4.x |
 
-The package CI also tests Laravel 13 on PHP 8.5 with PHPUnit 13. Version 4.1 adds optional Livewire 4 support without changing these platform requirements. If upgrading, read [UPGRADE.md](UPGRADE.md) before changing the Composer constraint.
+The package CI also tests Laravel 13 on PHP 8.5 with PHPUnit 13. Version 4 includes optional Livewire 4 support without changing these platform requirements. If upgrading, read [UPGRADE.md](UPGRADE.md) before changing the Composer constraint.
 
 Every matrix line resolves dependencies from scratch and runs Composer's security audit. The Laravel 10/11 jobs and the intentionally lowest-dependency Laravel 13 job expose audit reports without blocking compatibility tests; the normal Laravel 12 and latest Laravel 13 jobs remain release-blocking. Applications should review the report for their resolved dependency graph and apply their own risk policy.
 
@@ -43,14 +43,14 @@ Every matrix line resolves dependencies from scratch and runs Composer's securit
 Install the stable 4.x line:
 
 ```shell
-composer require arm092/laravel-translation:^4.1
+composer require arm092/laravel-translation:^4.0
 ```
 
 Laravel package discovery registers both service providers automatically. Publish the configuration and compiled assets:
 
 ```shell
-php artisan vendor:publish --provider="JoeDixon\Translation\TranslationServiceProvider" --tag=config
-php artisan vendor:publish --provider="JoeDixon\Translation\TranslationServiceProvider" --tag=assets
+php artisan vendor:publish --provider="Arm092\Translation\TranslationServiceProvider" --tag=config
+php artisan vendor:publish --provider="Arm092\Translation\TranslationServiceProvider" --tag=assets
 ```
 
 The manager is then available at `/languages` by default. Published assets keep stable URLs:
@@ -63,10 +63,23 @@ The manager is then available at `/languages` by default. Published assets keep 
 Run the asset publish command again with `--force` after a package upgrade. Views and package language strings can also be customized by publishing everything from the provider:
 
 ```shell
-php artisan vendor:publish --provider="JoeDixon\Translation\TranslationServiceProvider"
+php artisan vendor:publish --provider="Arm092\Translation\TranslationServiceProvider"
 ```
 
 This copies views to `resources/views/vendor/translation` and localization strings to `lang/vendor/translation`. Publish these only when application-level customization is needed, because published copies override future package improvements.
+
+### PHP namespace
+
+Version 4 uses the `Arm092\Translation` namespace for every package class. The Composer package name remains `arm092/laravel-translation`.
+
+Applications upgrading from 3.x must replace imports, type hints, container bindings, aliases, test references, and provider-class strings that start with the previous namespace. The current providers are:
+
+```php
+Arm092\Translation\TranslationServiceProvider::class;
+Arm092\Translation\TranslationBindingsServiceProvider::class;
+```
+
+Laravel package discovery registers them automatically. Explicit registration is only needed when package discovery is disabled.
 
 ## Configuration
 
@@ -238,6 +251,14 @@ Version 4 uses Blade, Tailwind CSS 4, and Vite 8. The fallback editor uses the p
 
 Vue, Axios, Laravel Mix, and the old PostCSS/Tailwind chain remain removed. Installing Livewire is optional and does not change the Apricode palette or the package's published asset URLs.
 
+### Default manager interface
+
+The package view uses a responsive, full-width workspace with a graphite top navigation bar; it does not render a left sidebar. The brand label comes from the host application's `config('app.name')`, so the manager fits the application without package-specific branding. Language and translation screens share consistent page headings, white data surfaces, locale badges, primary actions, readable table spacing, and visible keyboard focus.
+
+Translation filters remain a normal Laravel GET form. Language and group selects intentionally disable the browser-native indicator and render exactly one package caret, which avoids the duplicate-arrow appearance caused by combining a native arrow with a custom icon. On narrow screens, actions and filters wrap while wide translation tables scroll inside their data surface instead of expanding the page.
+
+These are the package defaults. Published files under `resources/views/vendor/translation` override them; applications with customized published views must compare and merge the new layout and form partials manually. Republish only after backing up intentional application changes.
+
 Only these semantic colors are defined in the package source:
 
 | Token | Value | Use |
@@ -266,7 +287,7 @@ The build writes the stable public filenames under `public/assets`, which the se
 
 ## Upgrading and troubleshooting
 
-See [UPGRADE.md](UPGRADE.md) for the 4.0-to-4.1 and 3.x-to-4.x checklists, and [CHANGELOG.md](CHANGELOG.md) for release changes.
+See [UPGRADE.md](UPGRADE.md) for the 3.x-to-4.0 checklist, and [CHANGELOG.md](CHANGELOG.md) for release changes.
 
 - **403 from the manager:** confirm the user is authenticated and the configured gate exists and returns `true`.
 - **Old styling or JavaScript:** republish assets with `--force`, clear Laravel caches, and invalidate any CDN/browser cache.
@@ -275,8 +296,9 @@ See [UPGRADE.md](UPGRADE.md) for the 4.0-to-4.1 and 3.x-to-4.x checklists, and [
 - **Database translations are missing:** confirm `driver`, connection, and table names, run migrations, then synchronize translations.
 - **Livewire 4 is installed but the Fetch editor still appears:** run `composer show livewire/livewire`, confirm the resolved major is 4 and package discovery is enabled, then run `php artisan optimize:clear`.
 - **Livewire 3 application:** fallback is intentional. Upgrade the application to Livewire 4 to enable the Livewire editor; Laravel Translation does not force that upgrade.
-- **Duplicate Alpine warning or duplicated UI behavior:** compare published `resources/views/vendor/translation` overrides with the current package views. A customized v4.0 layout may still load `app.js` while also rendering the Livewire component.
-- **Published views do not switch frontend:** application views override package views. Back them up, compare the new layout and translations index, and selectively merge the 4.1 integration or republish with `--force` if no customization must be preserved.
+- **Duplicate Alpine warning or duplicated UI behavior:** compare published `resources/views/vendor/translation` overrides with the current package views. A customized 3.x layout may still load old frontend assets while also rendering the Livewire component.
+- **Published views do not switch frontend:** application views override package views. Back them up, compare the new layout and translations index, and selectively merge the v4 integration or republish with `--force` if no customization must be preserved.
+- **A select still shows two arrows:** confirm the application is using the current `forms/select.blade.php` override and republished CSS. An older published view or stale stylesheet can restore the native-plus-custom combination.
 
 ## License
 
