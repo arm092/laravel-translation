@@ -1,12 +1,12 @@
 <div align="center">
 
-![Laravel Translation](logo.png)
+<img src="logo.svg" alt="Apricode" width="132">
 
 # Laravel Translation
 
 Manage Laravel file or database translations through Artisan and a web interface.
 
-![Laravel Translation UI](translation.png)
+![Laravel Translation manager with the Apricode interface](translation.png)
 
 ![GitHub checks](https://img.shields.io/github/checks-status/arm092/laravel-translation/master?style=for-the-badge)
 ![License](https://img.shields.io/github/license/arm092/laravel-translation.svg?style=for-the-badge)
