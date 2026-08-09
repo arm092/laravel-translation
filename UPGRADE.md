@@ -1,4 +1,61 @@
-# Upgrade guide: 3.x to 4.x
+# Upgrade guide
+
+## Upgrading from 4.0 to 4.1
+
+Laravel Translation 4.1 is backward compatible with 4.0. It adds an optional Livewire 4 inline editor; no database migration or new translation configuration is required.
+
+Update the package and clear cached discovery/configuration data:
+
+```shell
+composer require arm092/laravel-translation:^4.1 --with-all-dependencies
+php artisan optimize:clear
+```
+
+Choose the frontend behavior through the application's dependencies:
+
+- Keep the existing Blade/Alpine/Fetch editor by doing nothing.
+- Install `livewire/livewire:^4.0` to enable the Livewire editor automatically.
+- Applications on Livewire 3 continue to use the fallback until they independently upgrade to Livewire 4.
+
+```shell
+composer require livewire/livewire:^4.0
+php artisan optimize:clear
+```
+
+There is intentionally no frontend-mode configuration. The package detects an installed, active Livewire version in the supported `>=4.0 <5.0` range. Livewire is only a Composer suggestion, so Laravel Translation does not install or upgrade it on behalf of an application.
+
+### Review security and middleware
+
+Existing `route_group_config.middleware` and `authorization_gate` values continue to apply. In Livewire mode, the configured gate is checked during component mount and again before every save. Keep the production recommendation:
+
+```php
+'route_group_config' => [
+    'middleware' => ['web', 'auth'],
+],
+'authorization_gate' => 'manage-translations',
+```
+
+Route-group middleware protects initial manager pages. The application-owned gate additionally protects Livewire mutations. Artisan commands remain outside this web authorization boundary.
+
+### Review published views and assets
+
+The public CSS and fallback JavaScript URLs are unchanged. In Livewire mode, the package stylesheet is retained, Livewire injects its own Alpine/runtime assets, and the package `app.js` is omitted to prevent duplicate Alpine initialization.
+
+If the application has published views under `resources/views/vendor/translation`, those files override the new package integration. Do not overwrite customizations blindly. Back them up and compare the package layout, translations index, and translation-input views. Republish only when it is safe:
+
+```shell
+php artisan vendor:publish --provider="JoeDixon\Translation\TranslationServiceProvider" --force
+```
+
+Republishing only compiled assets is still safe when no application modifications exist there:
+
+```shell
+php artisan vendor:publish --provider="JoeDixon\Translation\TranslationServiceProvider" --tag=assets --force
+```
+
+Verify inline save, loading/saved/error states, keyboard focus, gate denial, browser console output, and the selected file or database driver before deployment.
+
+## Upgrading from 3.x to 4.x
 
 Laravel Translation 4.0 is a major release. Follow this checklist in a test environment before deploying it.
 

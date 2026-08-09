@@ -34,7 +34,7 @@ Version 4 is a major release because Laravel 8/9, PHP 8.0, legacy factories, Lar
 | 12 | 8.2+ | 4.x |
 | 13 | 8.3+ | 4.x |
 
-The package CI also tests Laravel 13 on PHP 8.5 with PHPUnit 13. If upgrading from 3.x, read [UPGRADE.md](UPGRADE.md) before changing the Composer constraint.
+The package CI also tests Laravel 13 on PHP 8.5 with PHPUnit 13. Version 4.1 adds optional Livewire 4 support without changing these platform requirements. If upgrading, read [UPGRADE.md](UPGRADE.md) before changing the Composer constraint.
 
 Every matrix line resolves dependencies from scratch and runs Composer's security audit. The Laravel 10/11 jobs and the intentionally lowest-dependency Laravel 13 job expose audit reports without blocking compatibility tests; the normal Laravel 12 and latest Laravel 13 jobs remain release-blocking. Applications should review the report for their resolved dependency graph and apply their own risk policy.
 
@@ -43,7 +43,7 @@ Every matrix line resolves dependencies from scratch and runs Composer's securit
 Install the stable 4.x line:
 
 ```shell
-composer require arm092/laravel-translation:^4.0
+composer require arm092/laravel-translation:^4.1
 ```
 
 Laravel package discovery registers both service providers automatically. Publish the configuration and compiled assets:
@@ -129,7 +129,7 @@ public function boot(): void
 'authorization_gate' => 'manage-translations',
 ```
 
-The manager calls `Gate::authorize('manage-translations')` for every web request. Laravel returns HTTP 403 when the gate denies access. The gate does not run for Artisan commands, so command execution must be protected with normal deployment and server permissions.
+The manager calls `Gate::authorize('manage-translations')` for every normal manager route. When Livewire 4 is active, the same gate is checked when an inline component mounts and again before every save. This prevents a previously rendered component or a crafted Livewire request from bypassing authorization. Laravel returns HTTP 403 when the gate denies access. The gate does not run for Artisan commands, so command execution must be protected with normal deployment and server permissions.
 
 Why both `auth` and a gate? `auth` establishes who the user is; the gate decides whether that authenticated user may change application translations. Using only `auth` would grant access to every signed-in user.
 
@@ -195,7 +195,27 @@ Writes are language-scoped and invalidate the package's in-memory group cache. L
 
 ## Web manager
 
-Open the configured manager URL and select a language. Click the pencil icon or translation text, edit the value, and move focus away from the field to save. The inline editor exposes four states: unchanged, loading, saved, and error. Requests use the Fetch API, include Laravel's CSRF token, and use same-origin credentials.
+Open the configured manager URL and select a language. Click the pencil icon or translation text, edit the value, and move focus away from the field to save. The inline editor exposes four states: unchanged, loading, saved, and error. Successful and failed indicators return to the unchanged state after three seconds.
+
+The package chooses the inline frontend automatically; there is no frontend configuration value to maintain:
+
+| Application state | Inline editor |
+| --- | --- |
+| Livewire `>=4.0 <5.0` is installed and its provider is active | Livewire 4 component |
+| Livewire 3 is installed | Blade, Alpine.js, and Fetch fallback |
+| Livewire is not installed or its provider is disabled | Blade, Alpine.js, and Fetch fallback |
+| A future unsupported Livewire major is installed | Blade, Alpine.js, and Fetch fallback |
+
+To opt into the Livewire editor, install Livewire 4 in the host application:
+
+```shell
+composer require livewire/livewire:^4.0
+php artisan optimize:clear
+```
+
+Livewire is listed under Composer `suggest`, not `require`. This keeps the translation package usable in applications that do not need Livewire and prevents it from choosing the application's frontend framework version. Livewire package discovery normally activates the provider automatically; no translation configuration or manual component registration is required.
+
+In fallback mode, saves use the existing package POST endpoint and Fetch API with Laravel's CSRF token and same-origin credentials. In Livewire mode, the package mounts its namespaced component, locks locale/group/key identifiers against client mutation, validates the same payload rules as the HTTP endpoint, and writes through the same driver-level action. Both paths dispatch `TranslationAdded`, preserve language isolation, and invalidate driver caches.
 
 Validation and session messages are escaped before rendering. Requests reject invalid locale, namespace, group, and key input. These checks are defense in depth; the manager should still be protected with `web`, `auth`, and an application-defined gate.
 
@@ -214,7 +234,9 @@ The authorization gate protects only web-manager routes and intentionally does n
 
 ## Frontend and Apricode palette
 
-Version 4 uses Blade, Alpine.js 3, vanilla Fetch, Tailwind CSS 4, and Vite 8. Vue, Axios, Laravel Mix, and the old PostCSS/Tailwind chain were removed. Livewire is not required.
+Version 4 uses Blade, Tailwind CSS 4, and Vite 8. The fallback editor uses the package's Alpine.js 3 and vanilla Fetch bundle. When Livewire 4 is active, Livewire supplies Alpine and its request runtime, and the package deliberately does not load `/vendor/translation/js/app.js`; this avoids starting Alpine twice. Livewire assets are injected on every manager page so existing Alpine-powered filters continue to work even when a translation table is empty. The package stylesheet remains `/vendor/translation/css/main.css` in both modes.
+
+Vue, Axios, Laravel Mix, and the old PostCSS/Tailwind chain remain removed. Installing Livewire is optional and does not change the Apricode palette or the package's published asset URLs.
 
 Only these semantic colors are defined in the package source:
 
@@ -244,13 +266,17 @@ The build writes the stable public filenames under `public/assets`, which the se
 
 ## Upgrading and troubleshooting
 
-See [UPGRADE.md](UPGRADE.md) for the complete 3.x to 4.x checklist and [CHANGELOG.md](CHANGELOG.md) for release changes.
+See [UPGRADE.md](UPGRADE.md) for the 4.0-to-4.1 and 3.x-to-4.x checklists, and [CHANGELOG.md](CHANGELOG.md) for release changes.
 
 - **403 from the manager:** confirm the user is authenticated and the configured gate exists and returns `true`.
 - **Old styling or JavaScript:** republish assets with `--force`, clear Laravel caches, and invalidate any CDN/browser cache.
 - **Configuration changes ignored:** rebuild Laravel's cached configuration.
 - **File writes fail:** verify write access to `langPath()` and confirm locale/group values use supported identifiers.
 - **Database translations are missing:** confirm `driver`, connection, and table names, run migrations, then synchronize translations.
+- **Livewire 4 is installed but the Fetch editor still appears:** run `composer show livewire/livewire`, confirm the resolved major is 4 and package discovery is enabled, then run `php artisan optimize:clear`.
+- **Livewire 3 application:** fallback is intentional. Upgrade the application to Livewire 4 to enable the Livewire editor; Laravel Translation does not force that upgrade.
+- **Duplicate Alpine warning or duplicated UI behavior:** compare published `resources/views/vendor/translation` overrides with the current package views. A customized v4.0 layout may still load `app.js` while also rendering the Livewire component.
+- **Published views do not switch frontend:** application views override package views. Back them up, compare the new layout and translations index, and selectively merge the 4.1 integration or republish with `--force` if no customization must be preserved.
 
 ## License
 
