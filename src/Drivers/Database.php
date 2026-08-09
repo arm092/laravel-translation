@@ -84,11 +84,12 @@ class Database extends Translation implements DriverInterface
      */
     public function addLanguage($language, $name = null)
     {
+        $this->assertValidLocale($language);
         if ($this->languageExists($language)) {
             throw new LanguageExistsException(__('translation::errors.language_exists', ['language' => $language]));
         }
 
-        Language::create([
+        $this->languageCache[$language] = Language::create([
             'language' => $language,
             'name' => $name,
         ]);
@@ -104,12 +105,13 @@ class Database extends Translation implements DriverInterface
      */
     public function addGroupTranslation($language, $group, $key, $value = '')
     {
+        $this->assertValidLocale($language);
+        $this->assertValidGroup($group);
         if (! $this->languageExists($language)) {
             $this->addLanguage($language);
         }
 
-        Language::where('language', $language)
-            ->first()
+        $this->getLanguage($language)
             ->translations()
             ->updateOrCreate([
                 'group' => $group,
@@ -119,6 +121,8 @@ class Database extends Translation implements DriverInterface
                 'key' => $key,
                 'value' => $value,
             ]);
+
+        unset($this->groupTranslationCache[$language]);
     }
 
     /**
@@ -131,12 +135,13 @@ class Database extends Translation implements DriverInterface
      */
     public function addSingleTranslation($language, $vendor, $key, $value = '')
     {
+        $this->assertValidLocale($language);
+        $this->assertValidGroup($vendor);
         if (! $this->languageExists($language)) {
             $this->addLanguage($language);
         }
 
-        Language::where('language', $language)
-            ->first()
+        $this->getLanguage($language)
             ->translations()
             ->updateOrCreate([
                 'group' => $vendor,
@@ -155,17 +160,24 @@ class Database extends Translation implements DriverInterface
      */
     public function getSingleTranslationsFor($language)
     {
-        $translations = $this->getLanguage($language)
-            ->translations()
-            ->where('group', 'like', '%single')
-            ->orWhereNull('group')
+        $languageModel = $this->getLanguage($language);
+
+        if ($languageModel === null) {
+            return collect();
+        }
+
+        $translations = $languageModel->translations()
+            ->where(function ($query) {
+                $query->where('group', 'like', '%single')
+                    ->orWhereNull('group');
+            })
             ->get()
             ->groupBy('group');
 
         // if there is no group, this is a legacy translation so we need to
         // update to 'single'. We do this here so it only happens once.
         if ($this->hasLegacyGroups($translations->keys())) {
-            TranslationModel::whereNull('group')->update(['group' => 'single']);
+            $languageModel->translations()->whereNull('group')->update(['group' => 'single']);
             // if any legacy groups exist, rerun the method so we get the
             // updated keys.
             return $this->getSingleTranslationsFor($language);
@@ -244,7 +256,7 @@ class Database extends Translation implements DriverInterface
      */
     private function getLanguage($language)
     {
-        if (isset($this->languageCache[$language])) {
+        if (array_key_exists($language, $this->languageCache)) {
             return $this->languageCache[$language];
         }
 

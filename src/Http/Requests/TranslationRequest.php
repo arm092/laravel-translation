@@ -11,7 +11,7 @@ class TranslationRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -21,11 +21,19 @@ class TranslationRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'key' => 'required',
-            'value' => 'required',
+            'language' => ['required', 'string', 'max:35', 'regex:/\A[A-Za-z0-9]+(?:[-_][A-Za-z0-9]+)*\z/D'],
+            'namespace' => ['nullable', 'string', 'max:100', 'regex:/\A[A-Za-z0-9_-]+\z/D'],
+            'group' => ['nullable', 'string', 'max:100', 'regex:/\A[A-Za-z0-9_-]+(?:::[A-Za-z0-9_-]+)?\z/D'],
+            'key' => ['required', 'string'],
+            'value' => ['present', 'nullable', 'string'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['language' => $this->route('language')]);
     }
 }

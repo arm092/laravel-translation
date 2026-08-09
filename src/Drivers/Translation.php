@@ -18,7 +18,7 @@ abstract class Translation
      */
     public function findMissingTranslations($language)
     {
-        return array_diff_assoc_recursive(
+        return $this->recursiveDifference(
             $this->scanner->findTranslations(),
             $this->allTranslationsFor($language)
         );
@@ -94,7 +94,7 @@ abstract class Translation
         return $allTranslations->map(function ($groups, $type) use ($language, $filter) {
             return $groups->map(function ($keys, $group) use ($language, $filter) {
                 return collect($keys)->filter(function ($translations, $key) use ($group, $language, $filter) {
-                    return strs_contain([$group, $key, $translations[$language], $translations[$this->sourceLanguage]], $filter);
+                    return $this->stringsContain([$group, $key, $translations[$language], $translations[$this->sourceLanguage]], $filter);
                 });
             })->filter(function ($keys) {
                 return $keys->isNotEmpty();
@@ -112,9 +112,70 @@ abstract class Translation
         if ($isGroupTranslation) {
             $this->addGroupTranslation($language, $group, $key, $value);
         } else {
-            $this->addSingleTranslation($language, 'single', $key, $value);
+            $this->addSingleTranslation($language, $group ?: 'single', $key, $value);
         }
 
         Event::dispatch(new TranslationAdded($language, $group ?: 'single', $key, $value));
+    }
+
+    protected function assertValidLocale(string $locale): void
+    {
+        if (! preg_match('/\A[A-Za-z0-9]+(?:[-_][A-Za-z0-9]+)*\z/D', $locale)) {
+            throw new \InvalidArgumentException("Invalid locale [$locale].");
+        }
+    }
+
+    protected function assertValidGroup(string $group): void
+    {
+        $segments = explode('::', $group);
+
+        if (count($segments) > 2) {
+            throw new \InvalidArgumentException("Invalid translation group [$group].");
+        }
+
+        foreach ($segments as $segment) {
+            if (! preg_match('/\A[A-Za-z0-9_-]+\z/D', $segment)) {
+                throw new \InvalidArgumentException("Invalid translation group [$group].");
+            }
+        }
+    }
+
+    private function recursiveDifference(iterable $expected, iterable $actual): array
+    {
+        $actual = $actual instanceof Collection ? $actual->all() : (array) $actual;
+        $difference = [];
+
+        foreach ($expected as $key => $value) {
+            if (is_iterable($value)) {
+                if (! array_key_exists($key, $actual) || ! is_iterable($actual[$key])) {
+                    $difference[$key] = $value;
+                    continue;
+                }
+
+                $nested = $this->recursiveDifference($value, $actual[$key]);
+                if ($nested !== []) {
+                    $difference[$key] = $nested;
+                }
+            } elseif (! array_key_exists($key, $actual)) {
+                $difference[$key] = $value;
+            }
+        }
+
+        return $difference;
+    }
+
+    private function stringsContain(iterable $haystacks, string $needle): bool
+    {
+        foreach ($haystacks as $haystack) {
+            if (is_iterable($haystack)) {
+                if ($this->stringsContain($haystack, $needle)) {
+                    return true;
+                }
+            } elseif (Str::contains(mb_strtolower((string) $haystack), mb_strtolower($needle))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
