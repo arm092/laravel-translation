@@ -1,6 +1,6 @@
 <?php
 
-namespace JoeDixon\Translation\Support;
+namespace Arm092\Translation\Support;
 
 final class TranslationInputRules
 {

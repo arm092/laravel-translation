@@ -1,13 +1,13 @@
 <?php
 
-namespace JoeDixon\Translation\Http\Controllers;
+namespace Arm092\Translation\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use JoeDixon\Translation\Drivers\Translation;
-use JoeDixon\Translation\Http\Requests\TranslationRequest;
+use Arm092\Translation\Drivers\Translation;
+use Arm092\Translation\Http\Requests\TranslationRequest;
 
 class LanguageTranslationController extends Controller
 {

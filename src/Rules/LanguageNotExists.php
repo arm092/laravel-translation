@@ -1,10 +1,10 @@
 <?php
 
-namespace JoeDixon\Translation\Rules;
+namespace Arm092\Translation\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use JoeDixon\Translation\Drivers\Translation;
+use Arm092\Translation\Drivers\Translation;
 
 class LanguageNotExists implements ValidationRule
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace JoeDixon\Translation\Drivers;
+namespace Arm092\Translation\Drivers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use JoeDixon\Translation\Actions\WriteTranslation;
+use Arm092\Translation\Actions\WriteTranslation;
 
 abstract class Translation
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace JoeDixon\Translation\Http\Requests;
+namespace Arm092\Translation\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use JoeDixon\Translation\Support\TranslationInputRules;
+use Arm092\Translation\Support\TranslationInputRules;
 
 class TranslationRequest extends FormRequest
 {

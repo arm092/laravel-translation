@@ -1,17 +1,17 @@
 <?php
 
-namespace JoeDixon\Translation;
+namespace Arm092\Translation;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
-use JoeDixon\Translation\Console\Commands\AddLanguageCommand;
-use JoeDixon\Translation\Console\Commands\AddTranslationKeyCommand;
-use JoeDixon\Translation\Console\Commands\ListLanguagesCommand;
-use JoeDixon\Translation\Console\Commands\ListMissingTranslationKeys;
-use JoeDixon\Translation\Console\Commands\SynchroniseMissingTranslationKeys;
-use JoeDixon\Translation\Console\Commands\SynchroniseTranslationsCommand;
-use JoeDixon\Translation\Drivers\Translation;
-use JoeDixon\Translation\Support\Frontend;
+use Arm092\Translation\Console\Commands\AddLanguageCommand;
+use Arm092\Translation\Console\Commands\AddTranslationKeyCommand;
+use Arm092\Translation\Console\Commands\ListLanguagesCommand;
+use Arm092\Translation\Console\Commands\ListMissingTranslationKeys;
+use Arm092\Translation\Console\Commands\SynchroniseMissingTranslationKeys;
+use Arm092\Translation\Console\Commands\SynchroniseTranslationsCommand;
+use Arm092\Translation\Drivers\Translation;
+use Arm092\Translation\Support\Frontend;
 
 class TranslationServiceProvider extends ServiceProvider
 {
@@ -188,7 +188,7 @@ class TranslationServiceProvider extends ServiceProvider
 
         \Livewire\Livewire::addNamespace(
             namespace: 'translation-manager',
-            classNamespace: 'JoeDixon\\Translation\\Livewire',
+            classNamespace: 'Arm092\\Translation\\Livewire',
             classPath: __DIR__.'/Livewire',
             classViewPath: __DIR__.'/../resources/views/livewire',
         );

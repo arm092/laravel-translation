@@ -1,12 +1,12 @@
 <?php
 
-namespace JoeDixon\Translation\Drivers;
+namespace Arm092\Translation\Drivers;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use JoeDixon\Translation\Exceptions\LanguageExistsException;
+use Arm092\Translation\Exceptions\LanguageExistsException;
 
 class File extends Translation implements DriverInterface
 {

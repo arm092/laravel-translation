@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use JoeDixon\Translation\Http\Controllers\LanguageController;
-use JoeDixon\Translation\Http\Controllers\LanguageTranslationController;
-use JoeDixon\Translation\Http\Middleware\AuthorizeTranslationManager;
+use Arm092\Translation\Http\Controllers\LanguageController;
+use Arm092\Translation\Http\Controllers\LanguageTranslationController;
+use Arm092\Translation\Http\Middleware\AuthorizeTranslationManager;
 
 $routeConfig = config('translation.route_group_config', []);
 $middleware = (array) ($routeConfig['middleware'] ?? []);
