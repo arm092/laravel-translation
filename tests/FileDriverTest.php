@@ -67,6 +67,33 @@ class FileDriverTest extends TestCase
         $this->assertTrue($translations->get('group')->isEmpty());
         $this->assertTrue($translations->get('single')->isEmpty());
     }
+
+    public function test_invalid_php_translation_file_reports_its_relative_path_and_type(): void
+    {
+        $path = app()['path.lang'].'/en/invalid.php';
+        file_put_contents($path, "<?php\n\nreturn 42;\n");
+
+        try {
+            $this->translation->getTranslationsForFile('en', 'invalid');
+            $this->fail('An invalid PHP translation file was accepted.');
+        } catch (\UnexpectedValueException $exception) {
+            $this->assertStringContainsString('en'.DIRECTORY_SEPARATOR.'invalid.php', $exception->getMessage());
+            $this->assertStringContainsString('int returned', $exception->getMessage());
+        } finally {
+            unlink($path);
+        }
+    }
+
+    public function test_manager_source_locale_is_not_changed_by_the_runtime_locale(): void
+    {
+        config()->set('translation.source_locale', 'en');
+        app()->setLocale('es');
+
+        $this->get(config('translation.ui_url').'/es/translations')
+            ->assertOk()
+            ->assertSee('>en</th>', false)
+            ->assertSee('>es</th>', false);
+    }
     public function test_it_throws_an_exception_if_a_language_exists()
     {
         $this->expectException(LanguageExistsException::class);

@@ -1,4 +1,5 @@
 @extends('translation::layout')
+@inject('routeNames', 'Arm092\Translation\Support\RouteNames')
 
 @section('body')
 
@@ -9,7 +10,7 @@
                 <p class="page-subtitle">{{ __('translation::translation.language_management_hint') }}</p>
             </div>
 
-            <a href="{{ route('languages.create') }}" class="button button-primary">
+            <a href="{{ route($routeNames->get('languages.create')) }}" class="button button-primary">
                 {{ __('translation::translation.add_language') }}
             </a>
         </div>
@@ -38,7 +39,7 @@
                                     <span class="locale-code">{{ $language }}</span>
                                 </td>
                                 <td class="text-right">
-                                    <a class="row-action" href="{{ route('languages.translations.index', $language) }}">
+                                    <a class="row-action" href="{{ route($routeNames->get('languages.translations.index'), $language) }}">
                                         {{ __('translation::translation.translations') }}
                                     </a>
                                 </td>

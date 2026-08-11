@@ -5,15 +5,19 @@ namespace Arm092\Translation\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Arm092\Translation\Drivers\Translation;
+use Arm092\Translation\Support\RouteNames;
 use Arm092\Translation\Http\Requests\LanguageRequest;
 
 class LanguageController extends Controller
 {
     private $translation;
 
-    public function __construct(Translation $translation)
+    private $routeNames;
+
+    public function __construct(Translation $translation, RouteNames $routeNames)
     {
         $this->translation = $translation;
+        $this->routeNames = $routeNames;
     }
 
     public function index(Request $request)
@@ -33,7 +37,7 @@ class LanguageController extends Controller
         $this->translation->addLanguage($request->locale, $request->name);
 
         return redirect()
-            ->route('languages.index')
+            ->route($this->routeNames->get('languages.index'))
             ->with('success', __('translation::translation.language_added'));
     }
 }

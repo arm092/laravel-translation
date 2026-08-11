@@ -9,6 +9,11 @@ use Arm092\Translation\Actions\WriteTranslation;
 
 abstract class Translation
 {
+    public function forgetCachedTranslations(?string $locale = null): void
+    {
+        // File translations are loaded from disk for each manager operation.
+    }
+
     /**
      * Find all of the translations in the app without translation for a given language.
      *

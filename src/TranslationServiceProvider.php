@@ -12,6 +12,9 @@ use Arm092\Translation\Console\Commands\SynchroniseMissingTranslationKeys;
 use Arm092\Translation\Console\Commands\SynchroniseTranslationsCommand;
 use Arm092\Translation\Drivers\Translation;
 use Arm092\Translation\Support\Frontend;
+use Arm092\Translation\Support\RouteNames;
+use Arm092\Translation\Support\SourceLocale;
+use Arm092\Translation\Support\TranslationCache;
 
 class TranslationServiceProvider extends ServiceProvider
 {
@@ -165,6 +168,9 @@ class TranslationServiceProvider extends ServiceProvider
     private function registerContainerBindings(): void
     {
         $this->app->singleton(Frontend::class);
+        $this->app->singleton(RouteNames::class);
+        $this->app->singleton(SourceLocale::class);
+        $this->app->singleton(TranslationCache::class);
 
         $this->app->singleton(Scanner::class, function () {
             $config = $this->app['config']['translation'];

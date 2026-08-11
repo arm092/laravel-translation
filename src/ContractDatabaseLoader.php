@@ -3,15 +3,19 @@
 namespace Arm092\Translation;
 
 use Illuminate\Contracts\Translation\Loader;
+use Illuminate\Support\Arr;
 use Arm092\Translation\Drivers\Translation;
 
 class ContractDatabaseLoader implements Loader
 {
     private $translation;
 
-    public function __construct(Translation $translation)
+    private $fallback;
+
+    public function __construct(Translation $translation, ?Loader $fallback = null)
     {
         $this->translation = $translation;
+        $this->fallback = $fallback;
     }
 
     /**
@@ -24,19 +28,23 @@ class ContractDatabaseLoader implements Loader
      */
     public function load($locale, $group, $namespace = null)
     {
+        $fallback = $this->fallback?->load($locale, $group, $namespace) ?? [];
+
         if ($group == '*' && $namespace == '*') {
-            return $this->translation->getSingleTranslationsFor($locale)->get('single', collect())->toArray();
+            $database = $this->translation->getSingleTranslationsFor($locale)->get('single', collect())->toArray();
+
+            return array_replace($fallback, $database);
         }
 
         if (is_null($namespace) || $namespace == '*') {
-            return $this->translation->getGroupTranslationsFor($locale)->filter(function ($value, $key) use ($group) {
-                return $key === $group;
-            })->first();
+            $database = $this->translation->getGroupTranslationsFor($locale)->get($group, collect())->toArray();
+
+            return array_replace_recursive($fallback, Arr::undot($database));
         }
 
-        return $this->translation->getGroupTranslationsFor($locale)->filter(function ($value, $key) use ($group, $namespace) {
-            return $key === "{$namespace}::{$group}";
-        })->first();
+        $database = $this->translation->getGroupTranslationsFor($locale)->get("{$namespace}::{$group}", collect())->toArray();
+
+        return array_replace_recursive($fallback, Arr::undot($database));
     }
 
     /**
@@ -48,7 +56,7 @@ class ContractDatabaseLoader implements Loader
      */
     public function addNamespace($namespace, $hint)
     {
-        //
+        $this->fallback?->addNamespace($namespace, $hint);
     }
 
     /**
@@ -59,7 +67,7 @@ class ContractDatabaseLoader implements Loader
      */
     public function addJsonPath($path)
     {
-        //
+        $this->fallback?->addJsonPath($path);
     }
 
     /**
@@ -69,6 +77,6 @@ class ContractDatabaseLoader implements Loader
      */
     public function namespaces()
     {
-        return [];
+        return $this->fallback?->namespaces() ?? [];
     }
 }

@@ -8,6 +8,7 @@ use Arm092\Translation\Drivers\Database;
 use Arm092\Translation\Drivers\File;
 use Arm092\Translation\Drivers\Translation;
 use Arm092\Translation\Scanner;
+use Arm092\Translation\Support\SourceLocale;
 
 class SynchroniseTranslationsCommand extends Command
 {
@@ -56,16 +57,19 @@ class SynchroniseTranslationsCommand extends Command
      */
     private $drivers = ['file', 'database'];
 
+    private $sourceLocale;
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(Scanner $scanner, Translation $translation)
+    public function __construct(Scanner $scanner, Translation $translation, SourceLocale $sourceLocale)
     {
         parent::__construct();
         $this->scanner = $scanner;
         $this->translation = $translation;
+        $this->sourceLocale = $sourceLocale;
     }
 
     /**
@@ -148,10 +152,10 @@ class SynchroniseTranslationsCommand extends Command
     private function createDriver($driver)
     {
         if ($driver === 'file') {
-            return new File(new Filesystem, app('path.lang'), config('app.locale'), $this->scanner);
+            return new File(new Filesystem, app('path.lang'), $this->sourceLocale->get(), $this->scanner);
         }
 
-        return new Database(config('app.locale'), $this->scanner);
+        return new Database($this->sourceLocale->get(), $this->scanner);
     }
 
     private function mergeLanguages($driver, $languages)
