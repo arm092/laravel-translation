@@ -21,6 +21,7 @@
                 @include('translation::forms.search', ['name' => 'filter', 'value' => Request::get('filter')])
                 @include('translation::forms.select', ['name' => 'language', 'items' => $languages, 'submit' => true, 'selected' => $language])
                 @include('translation::forms.select', ['name' => 'group', 'items' => $groups, 'submit' => true, 'selected' => Request::get('group'), 'optional' => true])
+                @include('translation::forms.select', ['name' => 'per_page', 'items' => collect([25 => 25, 50 => 50, 100 => 100]), 'submit' => true, 'selected' => $perPage])
             </div>
 
             <div class="panel data-surface">
@@ -40,13 +41,13 @@
                         </thead>
 
                         <tbody>
-                            @foreach($translations as $type => $items)
-                                
-                                @foreach($items as $group => $translations)
-
-                                    @foreach($translations as $key => $value)
-
-                                        @if(!is_array($value[$sourceLocale]))
+                            @foreach($translations as $row)
+                                @php
+                                    $type = $row['type'];
+                                    $group = $row['group'];
+                                    $key = $row['key'];
+                                    $value = $row['value'];
+                                @endphp
                                             <tr>
                                                 <td>{{ $group }}</td>
                                                 <td>{{ $key }}</td>
@@ -72,12 +73,6 @@
                                                     @endif
                                                 </td>
                                             </tr>
-                                        @endif
-
-                                    @endforeach
-
-                                @endforeach
-                                           
                             @endforeach
                         </tbody>
 
@@ -87,6 +82,13 @@
 
                 </div>
             </div>
+            @if($translations->hasPages())
+                <nav class="pagination" aria-label="Pagination">
+                    @if($translations->onFirstPage())<span aria-disabled="true">Previous</span>@else<a href="{{ $translations->previousPageUrl() }}">Previous</a>@endif
+                    <span>{{ $translations->currentPage() }} / {{ $translations->lastPage() }}</span>
+                    @if($translations->hasMorePages())<a href="{{ $translations->nextPageUrl() }}">Next</a>@else<span aria-disabled="true">Next</span>@endif
+                </nav>
+            @endif
         </form>
     </section>
 

@@ -2,26 +2,39 @@
 
 namespace Arm092\Translation;
 
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\ServiceProvider;
 use Arm092\Translation\Console\Commands\AddLanguageCommand;
 use Arm092\Translation\Console\Commands\AddTranslationKeyCommand;
+use Arm092\Translation\Console\Commands\ClearScanCacheCommand;
+use Arm092\Translation\Console\Commands\ExportTranslationsCommand;
+use Arm092\Translation\Console\Commands\FormatTranslationsCommand;
+use Arm092\Translation\Console\Commands\ImportTranslationsCommand;
 use Arm092\Translation\Console\Commands\ListLanguagesCommand;
 use Arm092\Translation\Console\Commands\ListMissingTranslationKeys;
+use Arm092\Translation\Console\Commands\MissingTranslationsCommand;
+use Arm092\Translation\Console\Commands\ScanTranslationsCommand;
 use Arm092\Translation\Console\Commands\SynchroniseMissingTranslationKeys;
 use Arm092\Translation\Console\Commands\SynchroniseTranslationsCommand;
+use Arm092\Translation\Console\Commands\UnusedTranslationsCommand;
+use Arm092\Translation\Contracts\TranslationBatchWriter;
+use Arm092\Translation\Contracts\TranslationExporter;
+use Arm092\Translation\Contracts\TranslationFormatter;
+use Arm092\Translation\Contracts\TranslationImporter;
+use Arm092\Translation\Contracts\TranslationScanner;
 use Arm092\Translation\Drivers\Translation;
+use Arm092\Translation\Support\CsvTranslations;
 use Arm092\Translation\Support\Frontend;
 use Arm092\Translation\Support\RouteNames;
 use Arm092\Translation\Support\SourceLocale;
+use Arm092\Translation\Support\TranslationBatch;
 use Arm092\Translation\Support\TranslationCache;
+use Arm092\Translation\Support\TranslationFormat;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\ServiceProvider;
 
 class TranslationServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the package services.
-     *
-     * @return void
      */
     public function boot(): void
     {
@@ -43,8 +56,6 @@ class TranslationServiceProvider extends ServiceProvider
 
     /**
      * Register package bindings in the container.
-     *
-     * @return void
      */
     public function register(): void
     {
@@ -57,8 +68,6 @@ class TranslationServiceProvider extends ServiceProvider
 
     /**
      * Load and publish package views.
-     *
-     * @return void
      */
     private function loadViews(): void
     {
@@ -71,8 +80,6 @@ class TranslationServiceProvider extends ServiceProvider
 
     /**
      * Register package routes.
-     *
-     * @return void
      */
     private function registerRoutes(): void
     {
@@ -81,8 +88,6 @@ class TranslationServiceProvider extends ServiceProvider
 
     /**
      * Publish package configuration.
-     *
-     * @return void
      */
     private function publishConfiguration(): void
     {
@@ -93,8 +98,6 @@ class TranslationServiceProvider extends ServiceProvider
 
     /**
      * Merge package configuration.
-     *
-     * @return void
      */
     private function mergeConfiguration(): void
     {
@@ -103,8 +106,6 @@ class TranslationServiceProvider extends ServiceProvider
 
     /**
      * Publish package assets.
-     *
-     * @return void
      */
     private function publishAssets(): void
     {
@@ -115,8 +116,6 @@ class TranslationServiceProvider extends ServiceProvider
 
     /**
      * Load package migrations.
-     *
-     * @return void
      */
     private function loadMigrations(): void
     {
@@ -129,8 +128,6 @@ class TranslationServiceProvider extends ServiceProvider
 
     /**
      * Load package translations.
-     *
-     * @return void
      */
     private function loadTranslations(): void
     {
@@ -143,8 +140,6 @@ class TranslationServiceProvider extends ServiceProvider
 
     /**
      * Register package commands.
-     *
-     * @return void
      */
     private function registerCommands(): void
     {
@@ -156,14 +151,19 @@ class TranslationServiceProvider extends ServiceProvider
                 ListMissingTranslationKeys::class,
                 SynchroniseMissingTranslationKeys::class,
                 SynchroniseTranslationsCommand::class,
+                ScanTranslationsCommand::class,
+                MissingTranslationsCommand::class,
+                UnusedTranslationsCommand::class,
+                ClearScanCacheCommand::class,
+                ExportTranslationsCommand::class,
+                ImportTranslationsCommand::class,
+                FormatTranslationsCommand::class,
             ]);
         }
     }
 
     /**
      * Register package bindings in the container.
-     *
-     * @return void
      */
     private function registerContainerBindings(): void
     {
@@ -171,12 +171,25 @@ class TranslationServiceProvider extends ServiceProvider
         $this->app->singleton(RouteNames::class);
         $this->app->singleton(SourceLocale::class);
         $this->app->singleton(TranslationCache::class);
+        $this->app->singleton(TranslationBatchWriter::class, TranslationBatch::class);
+        $this->app->singleton(CsvTranslations::class);
+        $this->app->alias(CsvTranslations::class, TranslationExporter::class);
+        $this->app->alias(CsvTranslations::class, TranslationImporter::class);
+        $this->app->singleton(TranslationFormatter::class, TranslationFormat::class);
 
         $this->app->singleton(Scanner::class, function () {
             $config = $this->app['config']['translation'];
 
-            return new Scanner(new Filesystem(), $config['scan_paths'], $config['translation_methods']);
+            return new Scanner(
+                new Filesystem,
+                $config['scan_paths'],
+                $config['translation_methods'],
+                $config['scan_excluded_paths'] ?? [],
+                $config['scan_ignored_keys'] ?? [],
+                $config['scan_cache_path'] ?? null,
+            );
         });
+        $this->app->alias(Scanner::class, TranslationScanner::class);
 
         $this->app->singleton(Translation::class, function ($app) {
             return (new TranslationManager($app, $app['config']['translation'], $app->make(Scanner::class)))->resolve();
@@ -192,11 +205,12 @@ class TranslationServiceProvider extends ServiceProvider
             return;
         }
 
-        \Livewire\Livewire::addNamespace(
-            namespace: 'translation-manager',
-            classNamespace: 'Arm092\\Translation\\Livewire',
-            classPath: __DIR__.'/Livewire',
-            classViewPath: __DIR__.'/../resources/views/livewire',
-        );
+        forward_static_call_array(['Livewire\\Livewire', 'addNamespace'], [
+            'translation-manager',
+            null,
+            'Arm092\\Translation\\Livewire',
+            __DIR__.'/Livewire',
+            __DIR__.'/../resources/views/livewire',
+        ]);
     }
 }

@@ -2,18 +2,15 @@
 
 namespace Arm092\Translation\Drivers;
 
-use Illuminate\Support\Collection;
 use Arm092\Translation\Exceptions\LanguageExistsException;
 use Arm092\Translation\Language;
 use Arm092\Translation\Translation as TranslationModel;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class Database extends Translation implements DriverInterface
 {
-    protected $sourceLanguage;
-
-    protected $scanner;
-
     protected array $groupTranslationCache = [];
 
     protected array $languageCache = [];
@@ -68,9 +65,19 @@ class Database extends Translation implements DriverInterface
      */
     public function allTranslations()
     {
-        return $this->allLanguages()->mapWithKeys(function ($name, $language) {
-            return [$language => $this->allTranslationsFor($language)];
-        });
+        try {
+            return Language::with('translations')->get()->mapWithKeys(function ($language) {
+                $grouped = $language->translations->groupBy('group');
+                $single = $grouped->filter(fn ($items, $group) => $group === null || str_ends_with((string) $group, 'single'))
+                    ->map(fn ($items) => $items->mapWithKeys(fn ($item) => [$item->key => $item->value]));
+                $groups = $grouped->reject(fn ($items, $group) => $group === null || str_ends_with((string) $group, 'single'))
+                    ->map(fn ($items) => $items->mapWithKeys(fn ($item) => [$item->key => $item->value]));
+
+                return [$language->language => collect(['group' => $groups, 'single' => $single])];
+            });
+        } catch (Throwable) {
+            return collect();
+        }
     }
 
     /**
@@ -130,6 +137,7 @@ class Database extends Translation implements DriverInterface
             ], [
                 'group' => $group,
                 'key' => $key,
+                'key_hash' => hash('sha256', $key),
                 'value' => $value,
             ]);
 
@@ -158,7 +166,9 @@ class Database extends Translation implements DriverInterface
                 'group' => $vendor,
                 'key' => $key,
             ], [
+                'group' => $vendor,
                 'key' => $key,
+                'key_hash' => hash('sha256', $key),
                 'value' => $value,
             ]);
     }
@@ -189,6 +199,7 @@ class Database extends Translation implements DriverInterface
         // update to 'single'. We do this here so it only happens once.
         if ($this->hasLegacyGroups($translations->keys())) {
             $languageModel->translations()->whereNull('group')->update(['group' => 'single']);
+
             // if any legacy groups exist, rerun the method so we get the
             // updated keys.
             return $this->getSingleTranslationsFor($language);
@@ -298,5 +309,33 @@ class Database extends Translation implements DriverInterface
         return $groups->filter(function ($key) {
             return $key === '';
         })->count() > 0;
+    }
+
+    public function upsertTranslations(array $rows): int
+    {
+        return DB::connection(config('translation.database.connection'))->transaction(function () use ($rows) {
+            $now = now();
+            $payload = [];
+            foreach ($rows as $row) {
+                if (! $this->languageExists($row['locale'])) {
+                    $this->addLanguage($row['locale']);
+                }
+                $payload[] = [
+                    'language_id' => $this->getLanguage($row['locale'])->getKey(),
+                    'group' => $row['group'] ?: 'single',
+                    'key' => $row['key'],
+                    'key_hash' => hash('sha256', $row['key']),
+                    'value' => $row['value'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+            foreach (array_chunk($payload, 500) as $chunk) {
+                TranslationModel::upsert($chunk, ['language_id', 'group', 'key_hash'], ['key', 'value', 'updated_at']);
+            }
+            $this->forgetCachedTranslations();
+
+            return count($payload);
+        });
     }
 }

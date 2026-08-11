@@ -19,6 +19,7 @@
                 {{ __('translation::translation.translations') }}
             </a>
         </li>
+        <li><a href="{{ route($routeNames->get('quality.index')) }}" class="{{ request()->is(config('translation.ui_url').'/quality/*') ? 'active' : '' }}">Quality</a></li>
         </ul>
     </div>
 </nav>

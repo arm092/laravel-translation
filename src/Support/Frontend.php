@@ -3,6 +3,7 @@
 namespace Arm092\Translation\Support;
 
 use Composer\InstalledVersions;
+use Livewire\Livewire;
 
 final class Frontend
 {
@@ -15,7 +16,7 @@ final class Frontend
 
     private function detectLivewireFour(): bool
     {
-        if (! class_exists(\Livewire\Livewire::class)
+        if (! class_exists(Livewire::class)
             || ! InstalledVersions::isInstalled('livewire/livewire')
             || ! app()->bound('livewire')
             || ! app()->bound('livewire.finder')) {

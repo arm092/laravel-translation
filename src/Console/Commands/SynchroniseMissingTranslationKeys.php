@@ -2,6 +2,8 @@
 
 namespace Arm092\Translation\Console\Commands;
 
+use Arm092\Translation\Support\ProtectedLocales;
+
 class SynchroniseMissingTranslationKeys extends BaseCommand
 {
     /**
@@ -9,7 +11,7 @@ class SynchroniseMissingTranslationKeys extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'translation:sync-missing-translation-keys {language?}';
+    protected $signature = 'translation:sync-missing-translation-keys {language?} {--force-protected}';
 
     /**
      * The console command description.
@@ -27,14 +29,26 @@ class SynchroniseMissingTranslationKeys extends BaseCommand
     {
         $language = $this->argument('language') ?: false;
 
+        if ($language) {
+            app(ProtectedLocales::class)->authorize($language, (bool) $this->option('force-protected'));
+        } else {
+            foreach (array_keys($this->translation->allLanguages()->all()) as $locale) {
+                app(ProtectedLocales::class)->authorize($locale, (bool) $this->option('force-protected'));
+            }
+        }
+
         try {
             // if we have a language, pass it in, if not the method will
             // automagically sync all languages
             $this->translation->saveMissingTranslations($language);
 
-            return $this->info(__('translation::translation.keys_synced'));
+            $this->info(__('translation::translation.keys_synced'));
+
+            return self::SUCCESS;
         } catch (\Exception $e) {
-            return $this->error($e->getMessage());
+            $this->error($e->getMessage());
+
+            return self::FAILURE;
         }
     }
 }

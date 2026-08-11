@@ -1,9 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use Arm092\Translation\Http\Controllers\LanguageController;
 use Arm092\Translation\Http\Controllers\LanguageTranslationController;
+use Arm092\Translation\Http\Controllers\QualityController;
 use Arm092\Translation\Http\Middleware\AuthorizeTranslationManager;
+use Illuminate\Support\Facades\Route;
 
 $routeConfig = config('translation.route_group_config', []);
 $middleware = (array) ($routeConfig['middleware'] ?? []);
@@ -30,4 +31,9 @@ Route::group($routeConfig, function () {
 
     Route::post(config('translation.ui_url').'/{language}/translations', [LanguageTranslationController::class, 'store'])
         ->name('languages.translations.store');
+
+    Route::get(config('translation.ui_url').'/quality/dashboard', [QualityController::class, 'index'])
+        ->name('quality.index');
+    Route::get(config('translation.ui_url').'/quality/export', [QualityController::class, 'export'])
+        ->name('quality.export');
 });

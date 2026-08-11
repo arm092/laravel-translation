@@ -319,6 +319,31 @@
         @apply border-info bg-info;
     }
 
+    .pagination {
+        @apply mt-5 flex items-center justify-center gap-4 text-sm text-graphite;
+    }
+
+    .pagination a {
+        @apply font-semibold text-primary;
+    }
+
+    .quality-summary {
+        @apply mb-6 grid grid-cols-2 gap-4 md:grid-cols-4;
+    }
+
+    .quality-card {
+        @apply rounded-lg border border-graphite bg-white p-4 text-ink no-underline shadow-sm;
+    }
+
+    .quality-card strong,
+    .quality-card span {
+        @apply block;
+    }
+
+    .quality-card strong {
+        @apply text-2xl text-primary;
+    }
+
     @media (max-width: 48rem) {
         .header-inner {
             @apply min-h-0 flex-col items-stretch px-4 pt-4;

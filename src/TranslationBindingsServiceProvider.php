@@ -2,15 +2,13 @@
 
 namespace Arm092\Translation;
 
-use Illuminate\Translation\TranslationServiceProvider as ServiceProvider;
 use Arm092\Translation\Drivers\Translation;
+use Illuminate\Translation\TranslationServiceProvider as ServiceProvider;
 
 class TranslationBindingsServiceProvider extends ServiceProvider
 {
     /**
      * Register package bindings in the container.
-     *
-     * @return void
      */
     public function register(): void
     {

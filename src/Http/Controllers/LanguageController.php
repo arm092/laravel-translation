@@ -2,11 +2,11 @@
 
 namespace Arm092\Translation\Http\Controllers;
 
+use Arm092\Translation\Drivers\Translation;
+use Arm092\Translation\Http\Requests\LanguageRequest;
+use Arm092\Translation\Support\RouteNames;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Arm092\Translation\Drivers\Translation;
-use Arm092\Translation\Support\RouteNames;
-use Arm092\Translation\Http\Requests\LanguageRequest;
 
 class LanguageController extends Controller
 {

@@ -2,8 +2,8 @@
 
 namespace Arm092\Translation\Console\Commands;
 
-use Illuminate\Console\Command;
 use Arm092\Translation\Drivers\Translation;
+use Illuminate\Console\Command;
 
 class BaseCommand extends Command
 {

@@ -2,6 +2,8 @@
 
 namespace Arm092\Translation\Console\Commands;
 
+use Arm092\Translation\Support\ProtectedLocales;
+
 class AddTranslationKeyCommand extends BaseCommand
 {
     /**
@@ -9,7 +11,7 @@ class AddTranslationKeyCommand extends BaseCommand
      *
      * @var string
      */
-    protected $signature = 'translation:add-translation-key';
+    protected $signature = 'translation:add-translation-key {--force-protected}';
 
     /**
      * The console command description.
@@ -26,6 +28,7 @@ class AddTranslationKeyCommand extends BaseCommand
     public function handle()
     {
         $language = $this->ask(__('translation::translation.prompt_language_for_key'));
+        app(ProtectedLocales::class)->authorize($language, (bool) $this->option('force-protected'));
 
         // we know this should be single or group so we can use the `anticipate`
         // method to give our users a helping hand
@@ -44,21 +47,31 @@ class AddTranslationKeyCommand extends BaseCommand
             try {
                 $this->translation->addSingleTranslation($language, 'single', $key, $value);
 
-                return $this->info(__('translation::translation.language_key_added'));
+                $this->info(__('translation::translation.language_key_added'));
+
+                return self::SUCCESS;
             } catch (\Exception $e) {
-                return $this->error($e->getMessage());
+                $this->error($e->getMessage());
+
+                return self::FAILURE;
             }
         } elseif ($type === 'group') {
             try {
                 $file = str_replace('.php', '', $file);
                 $this->translation->addGroupTranslation($language, $file, $key, $value);
 
-                return $this->info(__('translation::translation.language_key_added'));
+                $this->info(__('translation::translation.language_key_added'));
+
+                return self::SUCCESS;
             } catch (\Exception $e) {
-                return $this->error($e->getMessage());
+                $this->error($e->getMessage());
+
+                return self::FAILURE;
             }
         } else {
-            return $this->error(__('translation::translation.type_error'));
+            $this->error(__('translation::translation.type_error'));
+
+            return self::FAILURE;
         }
     }
 }
