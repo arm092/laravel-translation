@@ -2,13 +2,13 @@
 
 namespace Arm092\Translation\Tests\Livewire;
 
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Gate;
 use Arm092\Translation\Drivers\Translation;
 use Arm092\Translation\Events\TranslationAdded;
 use Arm092\Translation\Livewire\TranslationInput;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException;
 use Livewire\Livewire;
 
@@ -22,7 +22,7 @@ class FileTranslationInputTest extends LivewireTestCase
 
         parent::setUp();
 
-        $filesystem = new Filesystem();
+        $filesystem = new Filesystem;
         $filesystem->ensureDirectoryExists($this->languagePath.'/en');
         $filesystem->ensureDirectoryExists($this->languagePath.'/es');
         $filesystem->ensureDirectoryExists($this->languagePath.'/vendor/translation_test');
@@ -36,7 +36,7 @@ class FileTranslationInputTest extends LivewireTestCase
 
     protected function tearDown(): void
     {
-        (new Filesystem())->deleteDirectory($this->languagePath);
+        (new Filesystem)->deleteDirectory($this->languagePath);
 
         parent::tearDown();
     }
@@ -104,7 +104,7 @@ class FileTranslationInputTest extends LivewireTestCase
 
         $this->expectException(AuthorizationException::class);
 
-        (new TranslationInput())->mount(...array_values($this->parameters()));
+        (new TranslationInput)->mount(...array_values($this->parameters()));
     }
 
     public function test_gate_is_checked_during_each_save(): void
@@ -115,7 +115,7 @@ class FileTranslationInputTest extends LivewireTestCase
             return $allowed;
         });
 
-        $component = new TranslationInput();
+        $component = new TranslationInput;
         $component->mount(...array_values($this->parameters()));
         $component->value = 'Denied';
         $allowed = false;

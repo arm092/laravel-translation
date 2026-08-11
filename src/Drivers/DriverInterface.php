@@ -2,6 +2,8 @@
 
 namespace Arm092\Translation\Drivers;
 
+use Illuminate\Support\Collection;
+
 interface DriverInterface
 {
     /**

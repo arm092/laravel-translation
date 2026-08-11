@@ -2,13 +2,25 @@
 
 namespace Arm092\Translation\Drivers;
 
+use Arm092\Translation\Actions\WriteTranslation;
+use Arm092\Translation\Scanner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Arm092\Translation\Actions\WriteTranslation;
 
+/**
+ * @method \Illuminate\Support\Collection allLanguages()
+ * @method \Illuminate\Support\Collection allTranslationsFor(string $language)
+ * @method void addGroupTranslation(string $language, string $group, string $key, mixed $value = '')
+ * @method void addSingleTranslation(string $language, string $group, string $key, mixed $value = '')
+ * @method bool languageExists(string $language)
+ */
 abstract class Translation
 {
+    protected Scanner $scanner;
+
+    protected string $sourceLanguage;
+
     public function forgetCachedTranslations(?string $locale = null): void
     {
         // File translations are loaded from disk for each manager operation.
@@ -150,6 +162,7 @@ abstract class Translation
             if (is_iterable($value)) {
                 if (! array_key_exists($key, $actual) || ! is_iterable($actual[$key])) {
                     $difference[$key] = $value;
+
                     continue;
                 }
 

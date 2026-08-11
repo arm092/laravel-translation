@@ -2,9 +2,9 @@
 
 namespace Arm092\Translation;
 
+use Arm092\Translation\Drivers\Translation;
 use Illuminate\Contracts\Translation\Loader;
 use Illuminate\Support\Arr;
-use Arm092\Translation\Drivers\Translation;
 
 class ContractDatabaseLoader implements Loader
 {

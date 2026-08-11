@@ -2,10 +2,11 @@
 
 namespace Arm092\Translation\Actions;
 
-use Illuminate\Support\Facades\Event;
 use Arm092\Translation\Drivers\Translation;
 use Arm092\Translation\Events\TranslationAdded;
+use Arm092\Translation\Support\ProtectedLocales;
 use Arm092\Translation\Support\TranslationCache;
+use Illuminate\Support\Facades\Event;
 
 final class WriteTranslation
 {
@@ -18,6 +19,7 @@ final class WriteTranslation
         ?string $value,
         bool $isGroupTranslation,
     ): void {
+        app(ProtectedLocales::class)->authorize($language);
         $resolvedGroup = ($namespace ? $namespace.'::' : '').($group ?? '');
         $resolvedValue = $value ?? '';
 

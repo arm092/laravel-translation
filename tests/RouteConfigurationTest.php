@@ -2,9 +2,9 @@
 
 namespace Arm092\Translation\Tests;
 
-use Illuminate\Support\Facades\Route;
 use Arm092\Translation\TranslationBindingsServiceProvider;
 use Arm092\Translation\TranslationServiceProvider;
+use Illuminate\Support\Facades\Route;
 use Orchestra\Testbench\TestCase;
 
 class RouteConfigurationTest extends TestCase

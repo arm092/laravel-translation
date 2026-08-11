@@ -2,15 +2,13 @@
 
 namespace Arm092\Translation\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Arm092\Translation\Rules\LanguageNotExists;
+use Illuminate\Foundation\Http\FormRequest;
 
 class LanguageRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,8 +17,6 @@ class LanguageRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {

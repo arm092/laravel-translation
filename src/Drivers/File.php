@@ -2,21 +2,19 @@
 
 namespace Arm092\Translation\Drivers;
 
+use Arm092\Translation\Exceptions\LanguageExistsException;
+use Arm092\Translation\Support\AtomicFileWriter;
+use Arm092\Translation\Support\PhpTranslationRenderer;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Arm092\Translation\Exceptions\LanguageExistsException;
 
 class File extends Translation implements DriverInterface
 {
     private $disk;
 
     private $languageFilesPath;
-
-    protected $sourceLanguage;
-
-    protected $scanner;
 
     public function __construct(Filesystem $disk, $languageFilesPath, $sourceLanguage, $scanner)
     {
@@ -89,6 +87,7 @@ class File extends Translation implements DriverInterface
     public function allTranslationsFor($language)
     {
         $this->assertValidLocale($language);
+
         return Collection::make([
             'group' => $this->getGroupTranslationsFor($language),
             'single' => $this->getSingleTranslationsFor($language),
@@ -200,6 +199,7 @@ class File extends Translation implements DriverInterface
     public function getGroupTranslationsFor($language)
     {
         $this->assertValidLocale($language);
+
         return $this->getGroupFilesFor($language)->mapWithKeys(function ($group) {
             // here we check if the path contains 'vendor' as these will be the
             // files which need namespacing
@@ -278,9 +278,11 @@ class File extends Translation implements DriverInterface
         ksort($translations);
         $translations = Arr::undot($translations);
         if (Str::contains($group, '::')) {
-            return $this->saveNamespacedGroupTranslations($language, $group, $translations);
+            $this->saveNamespacedGroupTranslations($language, $group, $translations);
+
+            return;
         }
-        $this->disk->put("{$this->languageFilesPath}".DIRECTORY_SEPARATOR."{$language}".DIRECTORY_SEPARATOR."{$group}.php", "<?php\n\nreturn ".var_export($translations, true).';'.\PHP_EOL);
+        (new AtomicFileWriter($this->disk))->write("{$this->languageFilesPath}".DIRECTORY_SEPARATOR."{$language}".DIRECTORY_SEPARATOR."{$group}.php", (new PhpTranslationRenderer)->render($translations));
     }
 
     /**
@@ -300,7 +302,7 @@ class File extends Translation implements DriverInterface
             $this->disk->makeDirectory($directory, 0755, true);
         }
 
-        $this->disk->put("$directory".DIRECTORY_SEPARATOR."{$group}.php", "<?php\n\nreturn ".var_export($translations, true).';'.\PHP_EOL);
+        (new AtomicFileWriter($this->disk))->write("$directory".DIRECTORY_SEPARATOR."{$group}.php", (new PhpTranslationRenderer)->render($translations));
     }
 
     /**
@@ -321,7 +323,7 @@ class File extends Translation implements DriverInterface
                 $this->disk->makeDirectory($directory, 0755, true);
             }
 
-            $this->disk->put(
+            (new AtomicFileWriter($this->disk))->write(
                 "{$this->languageFilesPath}".DIRECTORY_SEPARATOR."{$languageFilePath}",
                 json_encode((object) $translations->get($group), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
             );

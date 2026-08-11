@@ -73,6 +73,17 @@ return [
     */
     'scan_paths' => [app_path(), resource_path()],
 
+    /* Paths (relative or absolute) and keys excluded from quality scans. */
+    'scan_excluded_paths' => [storage_path(), base_path('vendor')],
+    'scan_ignored_keys' => [],
+    'scan_cache_path' => storage_path('framework/cache/translation-scan.json'),
+
+    /* Locales which remain readable but cannot be changed by the manager. */
+    'protected_locales' => [],
+
+    /* Translation manager page size. Supported values: 25, 50 and 100. */
+    'pagination' => 50,
+
     /*
     |--------------------------------------------------------------------------
     | UI URL

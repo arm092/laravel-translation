@@ -2,13 +2,14 @@
 
 namespace Arm092\Translation\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
 use Arm092\Translation\Drivers\Database;
 use Arm092\Translation\Drivers\File;
 use Arm092\Translation\Drivers\Translation;
 use Arm092\Translation\Scanner;
+use Arm092\Translation\Support\ProtectedLocales;
 use Arm092\Translation\Support\SourceLocale;
+use Illuminate\Console\Command;
+use Illuminate\Filesystem\Filesystem;
 
 class SynchroniseTranslationsCommand extends Command
 {
@@ -17,7 +18,7 @@ class SynchroniseTranslationsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'translation:sync-translations {from?} {to?} {language?}';
+    protected $signature = 'translation:sync-translations {from?} {to?} {language?} {--dry-run} {--conflict=overwrite} {--force-protected}';
 
     /**
      * The console command description.
@@ -59,6 +60,8 @@ class SynchroniseTranslationsCommand extends Command
 
     private $sourceLocale;
 
+    private int $planned = 0;
+
     /**
      * Create a new command instance.
      *
@@ -91,7 +94,9 @@ class SynchroniseTranslationsCommand extends Command
             $this->fromDriver = $this->anticipate('Which driver would you like to take translations from?', $this->drivers);
 
             if (! in_array($this->fromDriver, $this->drivers)) {
-                return $this->error('Invalid driver');
+                $this->error('Invalid driver');
+
+                return self::FAILURE;
             }
         }
 
@@ -108,7 +113,9 @@ class SynchroniseTranslationsCommand extends Command
             $this->toDriver = $this->anticipate('Which driver would you like to add the translations to?', $this->drivers);
 
             if (! in_array($this->toDriver, $this->drivers)) {
-                return $this->error('Invalid driver');
+                $this->error('Invalid driver');
+
+                return self::FAILURE;
             }
         }
 
@@ -125,14 +132,18 @@ class SynchroniseTranslationsCommand extends Command
             elseif (in_array($this->argument('language'), $languages)) {
                 $language = $this->argument('language');
             } else {
-                return $this->error('Invalid language');
+                $this->error('Invalid language');
+
+                return self::FAILURE;
             }
         } // When the language will be entered manually or if the argument is invalid.
         else {
             $language = $this->anticipate('Which language? (leave blank for all)', $languages);
 
             if ($language && ! in_array($language, $languages)) {
-                return $this->error('Invalid language');
+                $this->error('Invalid language');
+
+                return self::FAILURE;
             }
         }
 
@@ -146,7 +157,7 @@ class SynchroniseTranslationsCommand extends Command
             $translations = $this->mergeLanguages($this->toDriver, $this->fromDriver->allTranslations());
         }
 
-        $this->info('Translations have been synced');
+        $this->info($this->option('dry-run') ? "Dry run: {$this->planned} translations would be synced" : 'Translations have been synced');
     }
 
     private function createDriver($driver)
@@ -167,6 +178,7 @@ class SynchroniseTranslationsCommand extends Command
 
     private function mergeTranslations($driver, $language, $translations)
     {
+        app(ProtectedLocales::class)->authorize($language, (bool) $this->option('force-protected'));
         $this->mergeGroupTranslations($driver, $language, $translations['group']);
         $this->mergeSingleTranslations($driver, $language, $translations['single']);
     }
@@ -176,6 +188,13 @@ class SynchroniseTranslationsCommand extends Command
         foreach ($groups as $group => $translations) {
             foreach ($translations as $key => $value) {
                 if (is_array($value)) {
+                    continue;
+                }
+                if (! $this->shouldWrite($driver, $language, 'group', $group, $key, $value)) {
+                    continue;
+                }
+                $this->planned++;
+                if ($this->option('dry-run')) {
                     continue;
                 }
                 $driver->addGroupTranslation($language, $group, $key, $value);
@@ -190,8 +209,35 @@ class SynchroniseTranslationsCommand extends Command
                 if (is_array($value)) {
                     continue;
                 }
+                if (! $this->shouldWrite($driver, $language, 'single', $vendor, $key, $value)) {
+                    continue;
+                }
+                $this->planned++;
+                if ($this->option('dry-run')) {
+                    continue;
+                }
                 $driver->addSingleTranslation($language, $vendor, $key, $value);
             }
         }
+    }
+
+    private function shouldWrite($driver, string $language, string $type, string $group, string $key, mixed $value): bool
+    {
+        $policy = (string) $this->option('conflict');
+        if (! in_array($policy, ['overwrite', 'skip', 'fail'], true)) {
+            throw new \InvalidArgumentException("Invalid conflict policy [$policy].");
+        }
+        $current = $driver->allTranslationsFor($language)->get($type, collect())->get($group, collect())->get($key);
+        if ($current === null || (string) $current === (string) $value) {
+            return true;
+        }
+        if ($policy === 'skip') {
+            return false;
+        }
+        if ($policy === 'fail') {
+            throw new \RuntimeException("Conflict for [$language:$group.$key].");
+        }
+
+        return true;
     }
 }

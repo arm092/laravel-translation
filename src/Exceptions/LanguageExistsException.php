@@ -2,6 +2,4 @@
 
 namespace Arm092\Translation\Exceptions;
 
-class LanguageExistsException extends \Exception
-{
-}
+class LanguageExistsException extends \Exception {}

@@ -2,10 +2,10 @@
 
 namespace Arm092\Translation\Tests\Livewire;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Arm092\Translation\Language;
 use Arm092\Translation\Livewire\TranslationInput;
 use Arm092\Translation\Translation;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Livewire\Livewire;
 
 class DatabaseTranslationInputTest extends LivewireTestCase

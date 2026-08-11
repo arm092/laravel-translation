@@ -2,14 +2,15 @@
 
 namespace Arm092\Translation\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Arm092\Translation\Drivers\Translation;
 use Arm092\Translation\Http\Requests\TranslationRequest;
 use Arm092\Translation\Support\RouteNames;
 use Arm092\Translation\Support\SourceLocale;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class LanguageTranslationController extends Controller
 {
@@ -51,7 +52,25 @@ class LanguageTranslationController extends Controller
             }
         }
 
-        return view('translation::languages.translations.index', compact('language', 'languages', 'groups', 'translations', 'sourceLocale'));
+        $rows = collect();
+        foreach ($translations as $type => $items) {
+            foreach ($items as $group => $values) {
+                foreach ($values as $key => $value) {
+                    if (! is_array($value[$sourceLocale] ?? null)) {
+                        $rows->push(compact('type', 'group', 'key', 'value'));
+                    }
+                }
+            }
+        }
+        $allowed = [25, 50, 100];
+        $perPage = (int) $request->integer('per_page', (int) config('translation.pagination', 50));
+        if (! in_array($perPage, $allowed, true)) {
+            $perPage = 50;
+        }
+        $page = LengthAwarePaginator::resolveCurrentPage();
+        $translations = new LengthAwarePaginator($rows->forPage($page, $perPage)->values(), $rows->count(), $perPage, $page, ['path' => $request->url(), 'query' => $request->query()]);
+
+        return view('translation::languages.translations.index', compact('language', 'languages', 'groups', 'translations', 'sourceLocale', 'perPage'));
     }
 
     public function create(Request $request, $language)

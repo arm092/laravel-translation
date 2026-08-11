@@ -2,6 +2,30 @@
 
 All notable changes to this project are documented in this file.
 
+## [4.1.0] - 2026-08-11
+
+### Added
+
+- PHP-Parser 5 AST scanner with occurrence locations, Blade and Laravel call-form support, dynamic/ambiguous warnings, ignored keys, excluded paths, safe fingerprint caching, and CI-oriented scan/missing/unused commands.
+- CSV v1 import/export, dry-run import planning, conflict policies, reversible spreadsheet-formula protection, deterministic formatting, public exporter/importer/formatter/batch-writer contracts, and replaceable container bindings.
+- Read-only translation quality dashboard with summaries, filters, pagination, and CSV export behind the existing middleware and authorization gate.
+- Protected locales with explicit CLI override, driver-neutral 25/50/100 pagination, database key hashes, deduplication migration, chunked upserts, and Windows/database CI coverage.
+- Larastan/PHPStan and Pint checks without a baseline.
+
+### Changed
+
+- Database `allTranslations()` eagerly loads languages and translations instead of issuing one query per locale.
+- `translation:sync-translations` now supports `--dry-run` and `--conflict=overwrite|skip|fail`; `overwrite` remains the default.
+- Translation writes continue to invalidate package and Laravel Translator caches after successful batch work.
+
+### Security
+
+- Scanner paths use realpath containment and never follow symlinks.
+- CSV cells that spreadsheet software could interpret as formulas are escaped on export.
+- Unused keys and dynamic expressions are advisory only and are never deleted or created automatically.
+
+There are no breaking changes from 4.0.x.
+
 ## [4.0.2] - 2026-08-11
 
 ### Added
