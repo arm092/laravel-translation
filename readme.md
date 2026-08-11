@@ -11,7 +11,6 @@ Manage Laravel file or database translations through Artisan and a web interface
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/arm092/laravel-translation.svg?style=flat-square)](https://packagist.org/packages/arm092/laravel-translation)
 [![Total Downloads](https://img.shields.io/packagist/dt/arm092/laravel-translation.svg?style=flat-square)](https://packagist.org/packages/arm092/laravel-translation)
 ![GitHub Actions](https://github.com/arm092/laravel-translation/actions/workflows/run-tests.yml/badge.svg?style=for-the-badge)
-![License](https://img.shields.io/github/license/arm092/laravel-translation.svg?style=for-the-badge)
 
 </div>
 
