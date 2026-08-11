@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented in this file.
 
+## [4.1.1] - 2026-08-11
+
+### Changed
+
+- Re-published the 4.1 quality toolkit under a new immutable version after Packagist retained metadata for an earlier deleted `4.1.0` tag.
+
+There are no code or compatibility changes from the intended 4.1.0 release.
+
 ## [4.1.0] - 2026-08-11
 
 ### Added
