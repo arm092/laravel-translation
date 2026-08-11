@@ -8,7 +8,9 @@ Manage Laravel file or database translations through Artisan and a web interface
 
 ![Laravel Translation manager with the Apricode interface](translation.png)
 
-![GitHub checks](https://img.shields.io/github/checks-status/arm092/laravel-translation/master?style=for-the-badge)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/arm092/laravel-translation.svg?style=flat-square)](https://packagist.org/packages/arm092/laravel-translation)
+[![Total Downloads](https://img.shields.io/packagist/dt/arm092/laravel-translation.svg?style=flat-square)](https://packagist.org/packages/arm092/laravel-translation)
+![GitHub Actions](https://github.com/arm092/laravel-translation/actions/workflows/run-tests.yml/badge.svg?style=for-the-badge)
 ![License](https://img.shields.io/github/license/arm092/laravel-translation.svg?style=for-the-badge)
 
 </div>
@@ -93,6 +95,14 @@ The published `config/translation.php` is the public package configuration. Afte
 
 Use `file` to edit Laravel's PHP and JSON language files directly. Use `database` when translations must be shared by multiple application servers or managed independently of a deployment artifact. The package replaces Laravel's translator loader only for the database driver; file mode keeps Laravel's native loader.
 
+### Source locale
+
+```php
+'source_locale' => null,
+```
+
+The manager displays a stable source locale beside the locale being edited. `null` uses the locale configured in `config/app.php`; set an explicit value such as `en` when request middleware changes the application's runtime locale. Runtime calls to `App::setLocale()` do not change the manager's source column.
+
 ### Route middleware
 
 ```php
@@ -110,6 +120,17 @@ Use `file` to edit Laravel's PHP and JSON language files directly. Use `database
 ```
 
 Other valid Laravel route-group options, such as `domain`, may be placed in `route_group_config`. The package always appends its authorization middleware to this group.
+
+If the host application already owns route names such as `languages.index`, add Laravel's standard `as` group option:
+
+```php
+'route_group_config' => [
+    'middleware' => ['web', 'auth'],
+    'as' => 'translation.',
+],
+```
+
+The manager then uses names such as `translation.languages.index` internally and remains compatible with `php artisan route:cache`. The default is intentionally unprefixed for backward compatibility.
 
 ### Authorization gate
 
@@ -202,9 +223,9 @@ php artisan migrate
 php artisan translation:sync-translations
 ```
 
-The synchronization command imports existing file translations after prompting for source and destination drivers. When database mode is active, the package registers its database-backed loader so existing Laravel translation calls need no code changes.
+The synchronization command imports existing file translations after prompting for source and destination drivers. When database mode is active, database values override matching file values while Laravel's normal file/JSON loader remains available as a fallback. This keeps vendor translations, package language namespaces, and values not yet synchronized to the database available without replacing Laravel APIs.
 
-Writes are language-scoped and invalidate the package's in-memory group cache. Legacy rows with a null group are upgraded to the `single` group only for their own language.
+Writes are language-scoped and invalidate both the package's driver cache and Laravel Translator's loaded groups. This matters for Livewire, Octane, queue workers, and other long-lived processes. Legacy rows with a null group are upgraded to the `single` group only for their own language.
 
 ## Web manager
 
@@ -294,6 +315,9 @@ See [UPGRADE.md](UPGRADE.md) for the 3.x-to-4.0 checklist, and [CHANGELOG.md](CH
 - **Configuration changes ignored:** rebuild Laravel's cached configuration.
 - **File writes fail:** verify write access to `langPath()` and confirm locale/group values use supported identifiers.
 - **Database translations are missing:** confirm `driver`, connection, and table names, run migrations, then synchronize translations.
+- **File/vendor strings disappear in database mode:** version 4.0.2+ falls back to Laravel's file loader. Clear application caches and confirm published configuration is current.
+- **Named routes collide with the host application:** configure `'as' => 'translation.'` inside `route_group_config`, clear route caches, and update intentional application links to the prefixed names.
+- **The wrong source column is displayed:** set `source_locale` explicitly; runtime locale middleware is intentionally independent from this manager setting.
 - **Livewire 4 is installed but the Fetch editor still appears:** run `composer show livewire/livewire`, confirm the resolved major is 4 and package discovery is enabled, then run `php artisan optimize:clear`.
 - **Livewire 3 application:** fallback is intentional. Upgrade the application to Livewire 4 to enable the Livewire editor; Laravel Translation does not force that upgrade.
 - **Duplicate Alpine warning or duplicated UI behavior:** compare published `resources/views/vendor/translation` overrides with the current package views. A customized 3.x layout may still load old frontend assets while also rendering the Livewire component.
