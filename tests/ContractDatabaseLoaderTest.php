@@ -2,9 +2,9 @@
 
 namespace Arm092\Translation\Tests;
 
-use Illuminate\Contracts\Translation\Loader;
 use Arm092\Translation\ContractDatabaseLoader;
 use Arm092\Translation\Drivers\Translation;
+use Illuminate\Contracts\Translation\Loader;
 use PHPUnit\Framework\TestCase;
 
 class ContractDatabaseLoaderTest extends TestCase
@@ -89,9 +89,7 @@ final class FileLoaderFake implements Loader
 
     public array $jsonPaths = [];
 
-    public function __construct(private array $values)
-    {
-    }
+    public function __construct(private array $values) {}
 
     public function load($locale, $group, $namespace = null)
     {

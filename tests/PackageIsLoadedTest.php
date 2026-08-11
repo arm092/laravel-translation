@@ -15,6 +15,7 @@ class PackageIsLoadedTest extends TestCase
             TranslationBindingsServiceProvider::class,
         ];
     }
+
     public function test_the_translation_pacakage_is_loaded()
     {
         $this->assertArrayHasKey(TranslationServiceProvider::class, app()->getLoadedProviders());

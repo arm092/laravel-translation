@@ -2,9 +2,9 @@
 
 namespace Arm092\Translation\Tests;
 
-use Illuminate\Support\Facades\Gate;
 use Arm092\Translation\TranslationBindingsServiceProvider;
 use Arm092\Translation\TranslationServiceProvider;
+use Illuminate\Support\Facades\Gate;
 use Orchestra\Testbench\TestCase;
 
 class AuthorizationTest extends TestCase

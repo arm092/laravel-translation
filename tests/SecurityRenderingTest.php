@@ -2,12 +2,12 @@
 
 namespace Arm092\Translation\Tests;
 
-use Mockery;
-use Illuminate\Translation\Translator as LaravelTranslator;
 use Arm092\Translation\Drivers\Translation;
 use Arm092\Translation\Support\TranslationCache;
 use Arm092\Translation\TranslationBindingsServiceProvider;
 use Arm092\Translation\TranslationServiceProvider;
+use Illuminate\Translation\Translator as LaravelTranslator;
+use Mockery;
 use Orchestra\Testbench\TestCase;
 
 class SecurityRenderingTest extends TestCase

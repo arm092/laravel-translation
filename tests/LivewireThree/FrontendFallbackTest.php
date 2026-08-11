@@ -2,10 +2,10 @@
 
 namespace Arm092\Translation\Tests\LivewireThree;
 
-use Composer\InstalledVersions;
 use Arm092\Translation\Support\Frontend;
 use Arm092\Translation\TranslationBindingsServiceProvider;
 use Arm092\Translation\TranslationServiceProvider;
+use Composer\InstalledVersions;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase;
 
