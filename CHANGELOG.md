@@ -2,6 +2,27 @@
 
 All notable changes to this project are documented in this file.
 
+## [4.0.2] - 2026-08-11
+
+### Added
+
+- Stable `source_locale` configuration for applications that change the runtime locale in middleware.
+- Support for Laravel's `route_group_config.as` option across package routes, redirects, views, and inline-save endpoints.
+- Packagist version and download badges in the README.
+
+### Changed
+
+- Database mode now composes with Laravel's file loader. Database values override matching values while application JSON files, package namespaces, and vendor translations remain available as fallback values.
+- Database group translations are restored to nested arrays before they are returned through Laravel's loader contract.
+
+### Fixed
+
+- Missing database tables, empty databases, missing locales, and missing groups now return safe fallback arrays during application and migration bootstrap.
+- Namespace and JSON-path registrations are delegated to Laravel's native loader in database mode.
+- Writes invalidate both driver caches and Laravel Translator's loaded-group cache for long-running processes.
+- Invalid PHP translation files now report the relative file and returned type instead of producing an indirect iteration error.
+- Regression coverage now protects template-like and HTML payload escaping in the fallback editor.
+
 ## [4.0.1] - 2026-08-10
 
 ### Added

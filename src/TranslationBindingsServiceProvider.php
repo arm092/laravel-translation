@@ -3,7 +3,6 @@
 namespace Arm092\Translation;
 
 use Illuminate\Translation\TranslationServiceProvider as ServiceProvider;
-use Illuminate\Translation\Translator;
 use Arm092\Translation\Drivers\Translation;
 
 class TranslationBindingsServiceProvider extends ServiceProvider
@@ -23,30 +22,14 @@ class TranslationBindingsServiceProvider extends ServiceProvider
             return;
         }
 
-        $this->registerDatabaseTranslator();
-    }
-
-    private function registerDatabaseTranslator(): void
-    {
+        parent::register();
         $this->registerDatabaseLoader();
-
-        $this->app->singleton('translator', function ($app) {
-            $loader = $app['translation.loader'];
-            // When registering the translator component, we'll need to set the default
-            // locale as well as the fallback locale. So, we'll grab the application
-            // configuration so we can easily get both of these values from there.
-            $locale = $app->getLocale();
-            $trans = new Translator($loader, $locale);
-            $trans->setFallback($app->getFallbackLocale());
-
-            return $trans;
-        });
     }
 
     protected function registerDatabaseLoader(): void
     {
-        $this->app->singleton('translation.loader', function ($app) {
-            return new ContractDatabaseLoader($app->make(Translation::class));
+        $this->app->extend('translation.loader', function ($loader, $app) {
+            return new ContractDatabaseLoader($app->make(Translation::class), $loader);
         });
     }
 }

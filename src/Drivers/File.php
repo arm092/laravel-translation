@@ -206,10 +206,10 @@ class File extends Translation implements DriverInterface
             if (Str::contains($group->getPathname(), 'vendor')) {
                 $vendor = Str::before(Str::after($group->getPathname(), 'vendor'.DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR);
 
-                return ["{$vendor}::{$group->getBasename('.php')}" => new Collection(Arr::dot($this->disk->getRequire($group->getPathname())))];
+                return ["{$vendor}::{$group->getBasename('.php')}" => new Collection(Arr::dot($this->loadGroupFile($group->getPathname())))];
             }
 
-            return [$group->getBasename('.php') => new Collection(Arr::dot($this->disk->getRequire($group->getPathname())))];
+            return [$group->getBasename('.php') => new Collection(Arr::dot($this->loadGroupFile($group->getPathname())))];
         });
     }
 
@@ -229,7 +229,7 @@ class File extends Translation implements DriverInterface
         $translations = [];
 
         if ($this->disk->exists($filePath)) {
-            $translations = Arr::dot($this->disk->getRequire($filePath));
+            $translations = Arr::dot($this->loadGroupFile($filePath));
         }
 
         return $translations;
@@ -391,5 +391,22 @@ class File extends Translation implements DriverInterface
         }
 
         return new Collection(Arr::flatten($vendorGroups));
+    }
+
+    private function loadGroupFile(string $path): array
+    {
+        $translations = $this->disk->getRequire($path);
+
+        if (! is_array($translations)) {
+            $relativePath = ltrim(str_replace($this->languageFilesPath, '', $path), DIRECTORY_SEPARATOR);
+
+            throw new \UnexpectedValueException(sprintf(
+                'Translation file [%s] must return an array; %s returned.',
+                $relativePath,
+                get_debug_type($translations),
+            ));
+        }
+
+        return $translations;
     }
 }

@@ -1,4 +1,5 @@
 @extends('translation::layout')
+@inject('routeNames', 'Arm092\Translation\Support\RouteNames')
 
 @section('body')
 
@@ -9,7 +10,7 @@
 
         <div class="panel panel-narrow">
 
-        <form action="{{ route('languages.translations.store', $language) }}" method="POST" x-data="{ showAdvancedOptions: false }">
+        <form action="{{ route($routeNames->get('languages.translations.store'), $language) }}" method="POST" x-data="{ showAdvancedOptions: false }">
 
             <fieldset>
 

@@ -1,5 +1,6 @@
 @extends('translation::layout')
 @inject('translationFrontend', 'Arm092\Translation\Support\Frontend')
+@inject('routeNames', 'Arm092\Translation\Support\RouteNames')
 
 @section('body')
 
@@ -10,12 +11,12 @@
                 <span class="locale-code">{{ $language }}</span>
             </div>
 
-            <a href="{{ route('languages.translations.create', $language) }}" class="button button-primary">
+            <a href="{{ route($routeNames->get('languages.translations.create'), $language) }}" class="button button-primary">
                 {{ __('translation::translation.add_translation') }}
             </a>
         </div>
 
-        <form action="{{ route('languages.translations.index', ['language' => $language]) }}" method="get">
+        <form action="{{ route($routeNames->get('languages.translations.index'), ['language' => $language]) }}" method="get">
             <div class="filter-bar">
                 @include('translation::forms.search', ['name' => 'filter', 'value' => Request::get('filter')])
                 @include('translation::forms.select', ['name' => 'language', 'items' => $languages, 'submit' => true, 'selected' => $language])
@@ -33,7 +34,7 @@
                             <tr>
                                 <th class="w-1/5 uppercase font-thin">{{ __('translation::translation.group_single') }}</th>
                                 <th class="w-1/5 uppercase font-thin">{{ __('translation::translation.key') }}</th>
-                                <th class="uppercase font-thin">{{ config('app.locale') }}</th>
+                                <th class="uppercase font-thin">{{ $sourceLocale }}</th>
                                 <th class="uppercase font-thin">{{ $language }}</th>
                             </tr>
                         </thead>
@@ -45,11 +46,11 @@
 
                                     @foreach($translations as $key => $value)
 
-                                        @if(!is_array($value[config('app.locale')]))
+                                        @if(!is_array($value[$sourceLocale]))
                                             <tr>
                                                 <td>{{ $group }}</td>
                                                 <td>{{ $key }}</td>
-                                                <td>{{ $value[config('app.locale')] }}</td>
+                                                <td>{{ $value[$sourceLocale] }}</td>
                                                 <td>
                                                     @if($translationFrontend->usesLivewire())
                                                         @php
@@ -66,7 +67,7 @@
                                                             'language' => $language,
                                                             'group' => $group,
                                                             'translationKey' => $key,
-                                                            'endpoint' => route('languages.translations.update', $language),
+                                                            'endpoint' => route($routeNames->get('languages.translations.update'), $language),
                                                         ])
                                                     @endif
                                                 </td>

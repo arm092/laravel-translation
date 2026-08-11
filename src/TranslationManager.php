@@ -37,11 +37,18 @@ class TranslationManager
 
     protected function resolveFileDriver()
     {
-        return new File(new Filesystem, $this->app['path.lang'], $this->app->config['app']['locale'], $this->scanner);
+        return new File(new Filesystem, $this->app['path.lang'], $this->sourceLocale(), $this->scanner);
     }
 
     protected function resolveDatabaseDriver()
     {
-        return new Database($this->app->config['app']['locale'], $this->scanner);
+        return new Database($this->sourceLocale(), $this->scanner);
+    }
+
+    private function sourceLocale(): string
+    {
+        $configured = $this->config['source_locale'] ?? null;
+
+        return (string) ($configured ?: $this->app->config['app']['locale']);
     }
 }

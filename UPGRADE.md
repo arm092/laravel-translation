@@ -1,5 +1,26 @@
 # Upgrade guide
 
+## Upgrading from 4.0.1 to 4.0.2
+
+Version 4.0.2 is backward compatible. Republish the configuration only when you want the new `source_locale` key, and preserve existing application values when doing so.
+
+```php
+'source_locale' => null,
+```
+
+Database mode now treats database translations as overrides on top of Laravel's native file and JSON loader. This restores vendor/package namespaces and file values that have not been synchronized. Applications that intentionally relied on missing database rows returning raw keys should synchronize those values or account for the documented fallback behavior before upgrading.
+
+To avoid route-name collisions without changing manager URLs, configure a route group name prefix:
+
+```php
+'route_group_config' => [
+    'middleware' => ['web', 'auth'],
+    'as' => 'translation.',
+],
+```
+
+Published package views from an earlier release contain unprefixed route calls. Compare them with the 4.0.2 package views or republish after backing up customizations. Finally run `php artisan optimize:clear` so the composite loader, route names, source locale, and translation caches are rebuilt.
+
 ## Upgrading from 3.x to 4.0
 
 Laravel Translation 4.0 is a major release. Follow this checklist in a test environment before deploying it.

@@ -15,6 +15,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Source locale
+    |--------------------------------------------------------------------------
+    |
+    | The manager displays this locale beside the locale being edited. A null
+    | value uses config('app.locale') while remaining independent of runtime
+    | locale changes made by request middleware.
+    |
+    */
+    'source_locale' => null,
+
+    /*
+    |--------------------------------------------------------------------------
     | Route group configuration
     |--------------------------------------------------------------------------
     |

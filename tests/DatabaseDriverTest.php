@@ -348,6 +348,35 @@ class DatabaseDriverTest extends TestCase
         $this->assertSame('Second', $this->translation->getGroupTranslationsFor('en')->get('messages')->get('second'));
     }
 
+    public function test_database_loader_returns_nested_group_arrays(): void
+    {
+        $this->translation->addGroupTranslation('en', 'validation', 'attributes.email', 'Email address');
+
+        $loaded = app('translation.loader')->load('en', 'validation');
+
+        $this->assertSame('Email address', $loaded['attributes']['email']);
+    }
+
+    public function test_database_loader_delegates_vendor_namespaces_to_the_file_loader(): void
+    {
+        app('translation.loader')->addNamespace('fixture', __DIR__.'/fixtures/lang');
+
+        $loaded = app('translation.loader')->load('en', 'test', 'fixture');
+
+        $this->assertSame('Hello', $loaded['hello']);
+    }
+
+    public function test_database_values_override_file_vendor_values(): void
+    {
+        app('translation.loader')->addNamespace('fixture', __DIR__.'/fixtures/lang');
+        $this->translation->addGroupTranslation('en', 'fixture::test', 'hello', 'Database hello');
+
+        $loaded = app('translation.loader')->load('en', 'test', 'fixture');
+
+        $this->assertSame('Database hello', $loaded['hello']);
+        $this->assertSame("What's up!", $loaded['whats_up']);
+    }
+
     private function createLanguages(int $count): Collection
     {
         return collect(range(1, $count))->map(fn () => $this->createLanguage());

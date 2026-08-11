@@ -18,6 +18,17 @@ class Database extends Translation implements DriverInterface
 
     protected array $languageCache = [];
 
+    public function forgetCachedTranslations(?string $locale = null): void
+    {
+        if ($locale === null) {
+            $this->groupTranslationCache = [];
+
+            return;
+        }
+
+        unset($this->groupTranslationCache[$locale]);
+    }
+
     public function __construct($sourceLanguage, $scanner)
     {
         $this->sourceLanguage = $sourceLanguage;

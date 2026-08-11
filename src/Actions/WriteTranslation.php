@@ -5,6 +5,7 @@ namespace Arm092\Translation\Actions;
 use Illuminate\Support\Facades\Event;
 use Arm092\Translation\Drivers\Translation;
 use Arm092\Translation\Events\TranslationAdded;
+use Arm092\Translation\Support\TranslationCache;
 
 final class WriteTranslation
 {
@@ -26,6 +27,7 @@ final class WriteTranslation
             $translation->addSingleTranslation($language, $resolvedGroup ?: 'single', $key, $resolvedValue);
         }
 
+        app(TranslationCache::class)->forget($translation, $language);
         Event::dispatch(new TranslationAdded($language, $resolvedGroup ?: 'single', $key, $resolvedValue));
     }
 }
