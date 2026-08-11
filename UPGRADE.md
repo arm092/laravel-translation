@@ -1,5 +1,26 @@
 # Upgrade guide
 
+## Upgrading from 4.0 to 4.1
+
+Version 4.1 is backward compatible and retains Laravel 10–13, PHP 8.1+, file/database drivers, Livewire 4 auto-detection, and the Alpine/Fetch fallback. Run `composer update arm092/laravel-translation --with-all-dependencies`, then migrate: the new migration normalizes legacy null groups, backfills SHA-256 key hashes, keeps the most recent duplicate, and adds the database uniqueness constraint used by batch upserts.
+
+Compare the published config and add scanner cache/exclusion settings, `protected_locales`, and `pagination`. The defaults preserve existing write access and use 50 rows per page. Protect a source locale only after checking workflows that intentionally edit it.
+
+Preview the new tooling before enabling writes:
+
+```shell
+php artisan translation:scan --refresh
+php artisan translation:missing en
+php artisan translation:unused en
+php artisan translation:export storage/app/translations.csv
+php artisan translation:import storage/app/translations.csv
+php artisan translation:format
+```
+
+Import requires `--commit`; format requires `--write`. Existing sync behavior remains overwrite, while `--dry-run` and `--conflict` allow safer review. Protected locales require `--force-protected` on supported CLI writes. Unused and dynamic scan results are never mutated automatically.
+
+Published views may hide the new quality navigation, pagination, or filters. Back up application overrides and compare them with package views before republishing. Republish assets if needed, then run `php artisan migrate` and `php artisan optimize:clear`. The quality dashboard inherits `route_group_config.middleware`, `route_group_config.as`, and `authorization_gate`; no separate access setting is introduced.
+
 ## Upgrading from 4.0.1 to 4.0.2
 
 Version 4.0.2 is backward compatible. Republish the configuration only when you want the new `source_locale` key, and preserve existing application values when doing so.

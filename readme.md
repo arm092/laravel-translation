@@ -172,9 +172,25 @@ Why both `auth` and a gate? `auth` establishes who the user is; the gate decides
 ```php
 'translation_methods' => ['trans', '__'],
 'scan_paths' => [app_path(), resource_path()],
+'scan_excluded_paths' => [storage_path(), base_path('vendor')],
+'scan_ignored_keys' => [],
+'scan_cache_path' => storage_path('framework/cache/translation-scan.json'),
 ```
 
-`translation_methods` lists function names whose string arguments are treated as translation keys. `scan_paths` limits where source scanning occurs. Keep these paths as narrow as practical to reduce scan time and avoid interpreting unrelated files.
+`translation_methods` lists additional function names whose string arguments are treated as translation keys. The AST scanner also understands `__`, `trans`, `trans_choice`, `Lang::get/choice`, `app('translator')->get/choice`, and Blade `@lang`. Literal keys become scan results with file, line, and occurrence data. Dynamic expressions are warnings: they are never converted into keys or written automatically.
+
+`scan_paths` limits where source scanning occurs. `scan_excluded_paths` removes generated, dependency, or private directories; `scan_ignored_keys` suppresses intentional runtime keys. The JSON cache uses path, filemtime, and size fingerprints and can be bypassed with `--refresh` or removed with `translation:scan-cache-clear`. The scanner does not follow symlinks and rejects files whose real path escapes a configured root.
+
+### Protected locales and pagination
+
+```php
+'protected_locales' => ['en'],
+'pagination' => 50,
+```
+
+Protected locales remain visible and usable as source languages, but package web writes, Livewire mutations, imports, formatting, and synchronization reject changes. CLI write commands require the explicit `--force-protected` option, making an accidental source-locale overwrite less likely. This is package-level protection; keep filesystem/database permissions and deployment controls in place.
+
+The manager accepts page sizes 25, 50, and 100 and preserves search, language, group, and page-size query parameters. Invalid values fall back to 50.
 
 ### Manager URL
 
@@ -263,8 +279,27 @@ Validation and session messages are escaped before rendering. Requests reject in
 | `translation:list-missing-translation-keys` | Scan and display keys missing from translations. |
 | `translation:sync-translations` | Synchronize translations between file and database drivers. |
 | `translation:sync-missing-translation-keys` | Create scanner-discovered missing keys for one or all languages. |
+| `translation:scan {--format=table\|json} {--refresh} {--fail}` | Report literal occurrences and dynamic/ambiguous usage; `--fail` is CI-friendly. |
+| `translation:missing {locale?} {--format=table\|json} {--fail}` | Report code keys missing from a locale. |
+| `translation:unused {locale?} {--format=table\|json} {--fail}` | Report stored keys not found in code; never deletes them. |
+| `translation:scan-cache-clear` | Remove the scanner fingerprint cache. |
+| `translation:export {path} {--locale=*}` | Export CSV v1 for selected or all locales. |
+| `translation:import {path} {--conflict=fail\|skip\|overwrite} {--commit}` | Validate and preview CSV by default; write only with `--commit`. |
+| `translation:format {--locale=*} {--write}` | Preview deterministic natural ordering; apply only with `--write`. |
 
 The authorization gate protects only web-manager routes and intentionally does not affect these commands.
+
+### CSV v1 and batch workflows
+
+CSV v1 starts with `type,namespace,group,key`, followed by one column per locale. It preserves dotted keys, vendor namespaces, empty strings, and the string `"0"`. Values beginning with spreadsheet formula markers (`=`, `+`, `-`, or `@`) are escaped on export and reversibly unescaped on import to prevent formula execution.
+
+Import first validates the whole file. Without `--commit`, it only prints the plan. The default conflict policy is `fail`; use `skip` to retain existing values or `overwrite` for an intentional replacement. Database overwrite batches use transactions and chunked upserts. File writes keep deterministic PHP short-array/JSON output and cache invalidation. The public `TranslationExporter`, `TranslationImporter`, `TranslationFormatter`, and `TranslationBatchWriter` contracts may be rebound in an application's service provider.
+
+`translation:sync-translations` additionally supports `--dry-run`, `--conflict=overwrite|skip|fail`, and `--force-protected`. Its default remains `overwrite` for backward compatibility.
+
+### Quality dashboard
+
+Open `/languages/quality/dashboard` (adjusted by `ui_url`) to view missing, unused, dynamic, and ambiguous results. It uses the same route middleware and authorization gate as the rest of the manager. Locale, status, path, and search filters are read-only; results are paginated and can be exported as CSV. The dashboard intentionally has no import, format, delete, or auto-fix action.
 
 ## Frontend and Apricode palette
 
@@ -308,7 +343,7 @@ The build writes the stable public filenames under `public/assets`, which the se
 
 ## Upgrading and troubleshooting
 
-See [UPGRADE.md](UPGRADE.md) for the 3.x-to-4.0 checklist, and [CHANGELOG.md](CHANGELOG.md) for release changes.
+See [UPGRADE.md](UPGRADE.md) for the 4.0-to-4.1 and 3.x-to-4.0 checklists, and [CHANGELOG.md](CHANGELOG.md) for release changes.
 
 - **403 from the manager:** confirm the user is authenticated and the configured gate exists and returns `true`.
 - **Old styling or JavaScript:** republish assets with `--force`, clear Laravel caches, and invalidate any CDN/browser cache.
@@ -323,6 +358,9 @@ See [UPGRADE.md](UPGRADE.md) for the 3.x-to-4.0 checklist, and [CHANGELOG.md](CH
 - **Duplicate Alpine warning or duplicated UI behavior:** compare published `resources/views/vendor/translation` overrides with the current package views. A customized 3.x layout may still load old frontend assets while also rendering the Livewire component.
 - **Published views do not switch frontend:** application views override package views. Back them up, compare the new layout and translations index, and selectively merge the v4 integration or republish with `--force` if no customization must be preserved.
 - **A select still shows two arrows:** confirm the application is using the current `forms/select.blade.php` override and republished CSS. An older published view or stale stylesheet can restore the native-plus-custom combination.
+- **Scanner results are stale:** run `php artisan translation:scan --refresh` or `translation:scan-cache-clear`, then confirm excluded paths and ignored keys in the published configuration.
+- **A protected locale cannot be imported:** this is intentional. Remove it from `protected_locales` or use `--force-protected` only after reviewing the preview.
+- **Quality dashboard route is missing:** clear route/config caches and merge the current package routes/views if the application publishes overrides.
 
 ## License
 
