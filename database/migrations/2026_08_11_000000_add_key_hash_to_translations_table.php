@@ -35,7 +35,12 @@ return new class extends Migration
             DB::connection($connection)->table($table)->where('language_id', $duplicate->language_id)->where('group', $duplicate->group)->where('key_hash', $duplicate->key_hash)->where('id', '<>', $duplicate->keep_id)->delete();
         }
 
-        $schema->table($table, fn (Blueprint $blueprint) => $blueprint->unique(['language_id', 'group', 'key_hash'], 'translations_language_group_key_hash_unique'));
+        $schema->table($table, function (Blueprint $blueprint) {
+            // Keep an independent index for the foreign key. MySQL may otherwise
+            // adopt the composite unique index and refuse to drop it on rollback.
+            $blueprint->index('language_id', 'translations_language_id_lookup');
+            $blueprint->unique(['language_id', 'group', 'key_hash'], 'translations_language_group_key_hash_unique');
+        });
     }
 
     public function down(): void
