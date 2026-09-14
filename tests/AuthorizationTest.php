@@ -39,11 +39,4 @@ class AuthorizationTest extends TestCase
 
         $this->get(config('translation.ui_url'))->assertForbidden();
     }
-
-    public function test_route_middleware_accepts_a_string()
-    {
-        config()->set('translation.route_group_config.middleware', 'web');
-
-        $this->get(config('translation.ui_url'))->assertOk();
-    }
 }

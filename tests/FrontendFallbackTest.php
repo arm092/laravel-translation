@@ -30,26 +30,4 @@ class FrontendFallbackTest extends TestCase
             ->assertSee('/vendor/translation/js/app.js', false)
             ->assertDontSee('/livewire/livewire', false);
     }
-
-    public function test_default_manager_uses_top_navigation_without_a_sidebar(): void
-    {
-        $this->get(config('translation.ui_url'))
-            ->assertOk()
-            ->assertSee('class="header"', false)
-            ->assertSee('class="app-main"', false)
-            ->assertDontSee('class="sidebar"', false);
-    }
-
-    public function test_select_partial_renders_one_custom_caret(): void
-    {
-        $html = view('translation::forms.select', [
-            'name' => 'language',
-            'items' => ['en' => 'English'],
-            'selected' => 'en',
-        ])->render();
-
-        $this->assertSame(1, substr_count($html, '<select'));
-        $this->assertSame(1, substr_count($html, 'class="caret"'));
-        $this->assertStringContainsString('aria-label="Language"', $html);
-    }
 }

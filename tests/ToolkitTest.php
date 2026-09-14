@@ -41,7 +41,7 @@ class ToolkitTest extends TestCase
         $app['config']->set('translation.driver', 'file');
     }
 
-    public function test_csv_v1_round_trip_plan_preserves_values(): void
+    public function test_csv_export_can_be_parsed_as_a_dry_run_without_writing(): void
     {
         $count = app(TranslationExporter::class)->export($this->csv, ['en', 'es']);
         $contents = file_get_contents($this->csv);

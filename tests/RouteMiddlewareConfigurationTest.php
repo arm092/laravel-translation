@@ -6,7 +6,7 @@ use Arm092\Translation\TranslationBindingsServiceProvider;
 use Arm092\Translation\TranslationServiceProvider;
 use Orchestra\Testbench\TestCase;
 
-class PackageIsLoadedTest extends TestCase
+class RouteMiddlewareConfigurationTest extends TestCase
 {
     protected function getPackageProviders($app)
     {
@@ -16,9 +16,13 @@ class PackageIsLoadedTest extends TestCase
         ];
     }
 
-    public function test_the_translation_pacakage_is_loaded()
+    protected function getEnvironmentSetUp($app)
     {
-        $this->assertArrayHasKey(TranslationServiceProvider::class, app()->getLoadedProviders());
-        $this->assertArrayHasKey(TranslationBindingsServiceProvider::class, app()->getLoadedProviders());
+        $app['config']->set('translation.route_group_config.middleware', 'web');
+    }
+
+    public function test_route_middleware_accepts_a_string(): void
+    {
+        $this->get(config('translation.ui_url'))->assertOk();
     }
 }

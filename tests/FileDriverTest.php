@@ -5,9 +5,9 @@ namespace Arm092\Translation\Tests;
 use Arm092\Translation\Drivers\Translation;
 use Arm092\Translation\Events\TranslationAdded;
 use Arm092\Translation\Exceptions\LanguageExistsException;
-use Arm092\Translation\Support\PhpTranslationRenderer;
 use Arm092\Translation\TranslationBindingsServiceProvider;
 use Arm092\Translation\TranslationServiceProvider;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Event;
 use Orchestra\Testbench\TestCase;
 
@@ -15,14 +15,25 @@ class FileDriverTest extends TestCase
 {
     private $translation;
 
+    private string $languagePath;
+
     /**
      * Setup the test environment.
      */
     protected function setUp(): void
     {
         parent::setUp();
-        app()['path.lang'] = __DIR__.'/fixtures/lang';
+        $this->languagePath = sys_get_temp_dir().DIRECTORY_SEPARATOR.'laravel-translation-file-'.bin2hex(random_bytes(8));
+        (new Filesystem)->copyDirectory(__DIR__.'/fixtures/lang', $this->languagePath);
+        app()['path.lang'] = $this->languagePath;
         $this->translation = app()->make(Translation::class);
+    }
+
+    protected function tearDown(): void
+    {
+        (new Filesystem)->deleteDirectory($this->languagePath);
+
+        parent::tearDown();
     }
 
     protected function getPackageProviders($app)
@@ -59,10 +70,7 @@ class FileDriverTest extends TestCase
     public function test_it_returns_all_translations_for_a_given_language()
     {
         $translations = $this->translation->allTranslationsFor('en');
-        $this->assertEquals($translations->count(), 2);
         $this->assertEquals(['single' => ['single' => ['Hello' => 'Hello', "What's up" => "What's up!"]], 'group' => ['test' => ['hello' => 'Hello', 'whats_up' => "What's up!"]]], $translations->toArray());
-        $this->assertArrayHasKey('single', $translations->toArray());
-        $this->assertArrayHasKey('group', $translations->toArray());
     }
 
     public function test_missing_locale_directory_returns_empty_translations()
@@ -75,7 +83,7 @@ class FileDriverTest extends TestCase
 
     public function test_invalid_php_translation_file_reports_its_relative_path_and_type(): void
     {
-        $path = app()['path.lang'].'/en/invalid.php';
+        $path = $this->languagePath.'/en/invalid.php';
         file_put_contents($path, "<?php\n\nreturn 42;\n");
 
         try {
@@ -126,11 +134,8 @@ class FileDriverTest extends TestCase
     {
         $this->translation->addLanguage('fr');
 
-        $this->assertTrue(file_exists(__DIR__.'/fixtures/lang/fr.json'));
-        $this->assertTrue(file_exists(__DIR__.'/fixtures/lang/fr'));
-
-        rmdir(__DIR__.'/fixtures/lang/fr');
-        unlink(__DIR__.'/fixtures/lang/fr.json');
+        $this->assertTrue(file_exists($this->languagePath.'/fr.json'));
+        $this->assertTrue(file_exists($this->languagePath.'/fr'));
     }
 
     public function test_it_can_add_a_new_translation_to_a_new_group()
@@ -141,7 +146,6 @@ class FileDriverTest extends TestCase
 
         $this->assertEquals(['test' => ['hello' => 'Hola!']], $translations->toArray()['group']);
 
-        unlink(__DIR__.'/fixtures/lang/es/test.php');
     }
 
     public function test_it_can_add_a_new_translation_to_an_existing_translation_group()
@@ -152,10 +156,6 @@ class FileDriverTest extends TestCase
 
         $this->assertEquals(['test' => ['hello' => 'Hello', 'whats_up' => 'What\'s up!', 'test' => 'Testing']], $translations->toArray()['group']);
 
-        file_put_contents(
-            app()['path.lang'].'/en/test.php',
-            (new PhpTranslationRenderer)->render(['hello' => 'Hello', 'whats_up' => 'What\'s up!'])
-        );
     }
 
     public function test_it_can_add_a_new_single_translation()
@@ -166,7 +166,6 @@ class FileDriverTest extends TestCase
 
         $this->assertEquals(['single' => ['Hello' => 'Hola!']], $translations->toArray()['single']);
 
-        unlink(__DIR__.'/fixtures/lang/es.json');
     }
 
     public function test_it_can_add_a_new_single_translation_to_an_existing_language()
@@ -177,10 +176,6 @@ class FileDriverTest extends TestCase
 
         $this->assertEquals(['single' => ['Hello' => 'Hello', 'What\'s up' => 'What\'s up!', 'Test' => 'Testing']], $translations->toArray()['single']);
 
-        file_put_contents(
-            app()['path.lang'].'/en.json',
-            json_encode((object) ['Hello' => 'Hello', 'What\'s up' => 'What\'s up!'], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
-        );
     }
 
     public function test_it_can_get_a_collection_of_group_names_for_a_given_language()
@@ -216,7 +211,6 @@ class FileDriverTest extends TestCase
             ],
         ]);
 
-        unlink(__DIR__.'/fixtures/lang/es/test.php');
     }
 
     public function test_it_can_add_a_vendor_namespaced_translations()
@@ -232,7 +226,6 @@ class FileDriverTest extends TestCase
             'single' => [],
         ]);
 
-        \File::deleteDirectory(__DIR__.'/fixtures/lang/vendor');
     }
 
     public function test_it_can_add_a_nested_translation()
@@ -247,10 +240,6 @@ class FileDriverTest extends TestCase
             ],
         ]);
 
-        file_put_contents(
-            app()['path.lang'].'/en/test.php',
-            (new PhpTranslationRenderer)->render(['hello' => 'Hello', 'whats_up' => 'What\'s up!'])
-        );
     }
 
     public function test_it_can_add_nested_vendor_namespaced_translations()
@@ -266,7 +255,6 @@ class FileDriverTest extends TestCase
             'single' => [],
         ]);
 
-        \File::deleteDirectory(__DIR__.'/fixtures/lang/vendor');
     }
 
     public function test_it_can_merge_a_namespaced_language_with_the_base_language()
@@ -299,7 +287,6 @@ class FileDriverTest extends TestCase
             ],
         ]);
 
-        \File::deleteDirectory(__DIR__.'/fixtures/lang/vendor');
     }
 
     public function test_a_list_of_languages_can_be_viewed()
@@ -319,11 +306,9 @@ class FileDriverTest extends TestCase
         $this->post(config('translation.ui_url'), ['locale' => 'de'])
             ->assertRedirect();
 
-        $this->assertTrue(file_exists(__DIR__.'/fixtures/lang/de.json'));
-        $this->assertTrue(file_exists(__DIR__.'/fixtures/lang/de'));
+        $this->assertTrue(file_exists($this->languagePath.'/de.json'));
+        $this->assertTrue(file_exists($this->languagePath.'/de'));
 
-        rmdir(__DIR__.'/fixtures/lang/de');
-        unlink(__DIR__.'/fixtures/lang/de.json');
     }
 
     public function test_a_list_of_translations_can_be_viewed()
@@ -347,10 +332,6 @@ class FileDriverTest extends TestCase
 
         $this->assertEquals(['Hello' => 'Hello', 'What\'s up' => 'What\'s up!', 'joe' => 'is cool'], $translations->toArray()['single']);
 
-        file_put_contents(
-            app()['path.lang'].'/en.json',
-            json_encode((object) ['Hello' => 'Hello', 'What\'s up' => 'What\'s up!'], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
-        );
     }
 
     public function test_a_translation_can_be_updated()
@@ -362,10 +343,6 @@ class FileDriverTest extends TestCase
 
         $this->assertEquals(['hello' => 'Hello there!', 'whats_up' => 'What\'s up!'], $translations->toArray()['test']);
 
-        file_put_contents(
-            app()['path.lang'].'/en/test.php',
-            (new PhpTranslationRenderer)->render(['hello' => 'Hello', 'whats_up' => 'What\'s up!'])
-        );
     }
 
     public function test_a_vendor_namespaced_translation_can_be_updated_through_the_manager()
@@ -381,7 +358,6 @@ class FileDriverTest extends TestCase
             $this->translation->getGroupTranslationsFor('en')->get('translation_test::test')->get('hello')
         );
 
-        \File::deleteDirectory(__DIR__.'/fixtures/lang/vendor');
     }
 
     public function test_a_vendor_namespaced_json_translation_can_be_updated_through_the_manager()
@@ -397,7 +373,6 @@ class FileDriverTest extends TestCase
             $this->translation->getSingleTranslationsFor('en')->get('translation_test::single')->get('Hello')
         );
 
-        \File::deleteDirectory(__DIR__.'/fixtures/lang/vendor');
     }
 
     public function test_adding_a_translation_fires_an_event_with_the_expected_data()
@@ -413,10 +388,6 @@ class FileDriverTest extends TestCase
                 $event->value === $data['value'] &&
                 $event->key === $data['key'];
         });
-        file_put_contents(
-            app()['path.lang'].'/en.json',
-            json_encode((object) ['Hello' => 'Hello', 'What\'s up' => 'What\'s up!'], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
-        );
     }
 
     public function test_updating_a_translation_fires_an_event_with_the_expected_data()
@@ -432,9 +403,5 @@ class FileDriverTest extends TestCase
                 $event->value === $data['value'] &&
                 $event->key === $data['key'];
         });
-        file_put_contents(
-            app()['path.lang'].'/en/test.php',
-            (new PhpTranslationRenderer)->render(['hello' => 'Hello', 'whats_up' => 'What\'s up!'])
-        );
     }
 }

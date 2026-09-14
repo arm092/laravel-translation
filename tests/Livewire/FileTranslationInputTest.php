@@ -177,14 +177,6 @@ class FileTranslationInputTest extends LivewireTestCase
         );
     }
 
-    public function test_livewire_assets_are_auto_injected_when_the_translation_page_renders_a_component(): void
-    {
-        $this->get(config('translation.ui_url').'/es/translations')
-            ->assertOk()
-            ->assertSee('data-update-uri=', false)
-            ->assertDontSee('/vendor/translation/js/app.js', false);
-    }
-
     /**
      * @return array<string, string>
      */

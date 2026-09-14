@@ -1,6 +1,6 @@
 <div class="select-group">
 
-    <select name="{{ $name }}" aria-label="{{ ucfirst($name) }}" @if(isset($submit) && $submit) x-on:change="$el.form.submit()" @endif>
+    <select name="{{ $name }}" aria-label="{{ ucfirst($name) }}" @if(isset($submit) && $submit) x-on:change="$el.form.requestSubmit()" @endif>
         @if(isset($optional) && $optional)<option value> ----- </option>@endif
         @foreach($items as $key => $value)
             @if(is_numeric($key))

@@ -31,6 +31,5 @@ class ScannerTest extends TestCase
         $matches = $this->scanner->findTranslations();
 
         $this->assertEquals($matches, ['single' => ['single' => ['This will go in the JSON array' => '', 'This will also go in the JSON array' => '', 'trans' => '']], 'group' => ['lang' => ['first_match' => ''], 'lang_get' => ['first' => '', 'second' => ''], 'trans' => ['first_match' => '', 'third_match' => ''], 'trans_choice' => ['with_params' => '']]]);
-        $this->assertCount(2, $matches);
     }
 }

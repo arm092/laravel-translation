@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented in this file.
 
+## [4.1.2] - 2026-09-14
+
+### Fixed
+
+- Translation language, group, and page-size filters now apply immediately when their selection changes.
+- Translation search now applies automatically after a short debounce, and clearing the search restores the complete filtered list without requiring Enter.
+- File-driver tests now use isolated temporary language directories, preventing concurrent or interrupted test runs from modifying shared fixtures.
+
+### Changed
+
+- Removed redundant markup, service-provider, and duplicate Livewire assertions that did not protect observable package behavior.
+- Corrected the route middleware string test so configuration is applied before package routes are registered.
+- Updated the Vitest development dependency to 4.1.11 to resolve its path-traversal advisory.
+- Added the explicit Eloquent relation type required by current Larastan releases.
+
 ## [4.1.1] - 2026-08-11
 
 ### Changed
