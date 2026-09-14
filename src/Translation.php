@@ -3,6 +3,7 @@
 namespace Arm092\Translation;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Translation extends Model
 {
@@ -15,7 +16,10 @@ class Translation extends Model
         $this->table = config('translation.database.translations_table');
     }
 
-    public function language()
+    /**
+     * @return BelongsTo<Language, $this>
+     */
+    public function language(): BelongsTo
     {
         return $this->belongsTo(Language::class);
     }

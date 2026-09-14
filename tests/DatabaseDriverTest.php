@@ -89,10 +89,7 @@ class DatabaseDriverTest extends TestCase
         $this->createTranslation(['language_id' => $default->id, 'group' => 'single', 'key' => "What's up", 'value' => "What's up!"]);
 
         $translations = $this->translation->allTranslationsFor('en');
-        $this->assertEquals($translations->count(), 2);
         $this->assertEquals(['single' => ['single' => ['Hello' => 'Hello', "What's up" => "What's up!"]], 'group' => ['test' => ['hello' => 'Hello', 'whats_up' => "What's up!"]]], $translations->toArray());
-        $this->assertArrayHasKey('single', $translations->toArray());
-        $this->assertArrayHasKey('group', $translations->toArray());
     }
 
     public function test_it_throws_an_exception_if_a_language_exists()
@@ -103,11 +100,6 @@ class DatabaseDriverTest extends TestCase
 
     public function test_it_can_add_a_new_language()
     {
-        $this->assertDatabaseMissing(config('translation.database.languages_table'), [
-            'language' => 'fr',
-            'name' => 'Français',
-        ]);
-
         $this->translation->addLanguage('fr', 'Français');
         $this->assertDatabaseHas(config('translation.database.languages_table'), [
             'language' => 'fr',

@@ -16,7 +16,11 @@
             </a>
         </div>
 
-        <form action="{{ route($routeNames->get('languages.translations.index'), ['language' => $language]) }}" method="get">
+        <form
+            action="{{ route($routeNames->get('languages.translations.index'), ['language' => $language]) }}"
+            method="get"
+            x-data
+        >
             <div class="filter-bar">
                 @include('translation::forms.search', ['name' => 'filter', 'value' => Request::get('filter')])
                 @include('translation::forms.select', ['name' => 'language', 'items' => $languages, 'submit' => true, 'selected' => $language])
