@@ -83,13 +83,7 @@
 
                     </div>
                 </div>
-                @if($translations->hasPages())
-                    <nav class="pagination" aria-label="Pagination">
-                        @if($translations->onFirstPage())<span aria-disabled="true">Previous</span>@else<a href="{{ $translations->previousPageUrl() }}">Previous</a>@endif
-                        <span>{{ $translations->currentPage() }} / {{ $translations->lastPage() }}</span>
-                        @if($translations->hasMorePages())<a href="{{ $translations->nextPageUrl() }}">Next</a>@else<span aria-disabled="true">Next</span>@endif
-                    </nav>
-                @endif
+                <x-translation::pagination :paginator="$translations" />
             </div>
         </form>
         @endif

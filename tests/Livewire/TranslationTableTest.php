@@ -57,4 +57,32 @@ class TranslationTableTest extends LivewireTestCase
             ->assertSeeHtml('wire:model.live="group"')
             ->assertSeeHtml('wire:model.live="perPage"');
     }
+
+    public function test_numbered_pagination_moves_between_result_pages(): void
+    {
+        $translations = [];
+
+        foreach (range(1, 30) as $number) {
+            $translations[sprintf('page_%02d', $number)] = sprintf('Translation %02d', $number);
+        }
+
+        (new Filesystem)->put(
+            $this->languagePath.'/en/pagination.php',
+            "<?php\n\nreturn ".var_export($translations, true).";\n",
+        );
+        (new Filesystem)->put(
+            $this->languagePath.'/es/pagination.php',
+            "<?php\n\nreturn ".var_export($translations, true).";\n",
+        );
+
+        $this->app->forgetInstance(Translation::class);
+
+        Livewire::test(TranslationTable::class, ['language' => 'es'])
+            ->set('perPage', 25)
+            ->assertSee('page_01')
+            ->assertDontSee('page_30')
+            ->call('gotoPage', 2)
+            ->assertDontSee('page_01')
+            ->assertSee('page_30');
+    }
 }
