@@ -20,6 +20,7 @@
             action="{{ route($routeNames->get('languages.translations.index'), ['language' => $language]) }}"
             method="get"
             x-data
+            data-translation-frontend="{{ $translationFrontend->usesLivewire() ? 'livewire' : 'fallback' }}"
         >
             <div class="filter-bar">
                 @include('translation::forms.search', ['name' => 'filter', 'value' => Request::get('filter')])
@@ -28,8 +29,9 @@
                 @include('translation::forms.select', ['name' => 'per_page', 'items' => collect([25 => 25, 50 => 50, 100 => 100]), 'submit' => true, 'selected' => $perPage])
             </div>
 
-            <div class="panel data-surface">
-                <div class="panel-body translations-table">
+            <div data-translation-results>
+                <div class="panel data-surface">
+                    <div class="panel-body translations-table">
 
                 @if(count($translations))
 
@@ -84,15 +86,16 @@
 
                 @endif
 
+                    </div>
                 </div>
+                @if($translations->hasPages())
+                    <nav class="pagination" aria-label="Pagination">
+                        @if($translations->onFirstPage())<span aria-disabled="true">Previous</span>@else<a href="{{ $translations->previousPageUrl() }}">Previous</a>@endif
+                        <span>{{ $translations->currentPage() }} / {{ $translations->lastPage() }}</span>
+                        @if($translations->hasMorePages())<a href="{{ $translations->nextPageUrl() }}">Next</a>@else<span aria-disabled="true">Next</span>@endif
+                    </nav>
+                @endif
             </div>
-            @if($translations->hasPages())
-                <nav class="pagination" aria-label="Pagination">
-                    @if($translations->onFirstPage())<span aria-disabled="true">Previous</span>@else<a href="{{ $translations->previousPageUrl() }}">Previous</a>@endif
-                    <span>{{ $translations->currentPage() }} / {{ $translations->lastPage() }}</span>
-                    @if($translations->hasMorePages())<a href="{{ $translations->nextPageUrl() }}">Next</a>@else<span aria-disabled="true">Next</span>@endif
-                </nav>
-            @endif
         </form>
     </section>
 

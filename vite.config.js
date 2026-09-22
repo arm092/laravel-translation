@@ -9,9 +9,12 @@ export default defineConfig({
         emptyOutDir: true,
         cssCodeSplit: false,
         rollupOptions: {
-            input: 'resources/js/app.js',
+            input: {
+                app: 'resources/js/app.js',
+                'translation-search': 'resources/js/translation-search.js',
+            },
             output: {
-                entryFileNames: 'js/app.js',
+                entryFileNames: 'js/[name].js',
                 assetFileNames: ({ names }) => names.some((name) => name.endsWith('.css'))
                     ? 'css/main.css'
                     : 'assets/[name]-[hash][extname]',

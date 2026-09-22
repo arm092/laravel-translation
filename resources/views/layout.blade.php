@@ -20,6 +20,7 @@
         </main>
     </div>
     
+    <script type="module" src="{{ asset('/vendor/translation/js/translation-search.js') }}"></script>
     @if($translationFrontend->usesLivewire())
         @php(app('livewire')->forceAssetInjection())
     @else

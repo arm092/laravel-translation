@@ -59,6 +59,7 @@ The manager is then available at `/languages` by default. Published assets keep 
 ```text
 /vendor/translation/css/main.css
 /vendor/translation/js/app.js
+/vendor/translation/js/translation-search.js
 ```
 
 Run the asset publish command again with `--force` after a package upgrade. Views and package language strings can also be customized by publishing everything from the provider:
@@ -302,7 +303,7 @@ Open `/languages/quality/dashboard` (adjusted by `ui_url`) to view missing, unus
 
 ## Frontend and Apricode palette
 
-Version 4 uses Blade, Tailwind CSS 4, and Vite 8. The fallback editor uses the package's Alpine.js 3 and vanilla Fetch bundle. When Livewire 4 is active, Livewire supplies Alpine and its request runtime, and the package deliberately does not load `/vendor/translation/js/app.js`; this avoids starting Alpine twice. Livewire assets are injected on every manager page so existing Alpine-powered filters continue to work even when a translation table is empty. The package stylesheet remains `/vendor/translation/css/main.css` in both modes.
+Version 4 uses Blade, Tailwind CSS 4, and Vite 8. The fallback editor uses the package's Alpine.js 3 and vanilla Fetch bundle. When Livewire 4 is active, Livewire supplies Alpine and its request runtime, and the package deliberately does not load `/vendor/translation/js/app.js`; this avoids starting Alpine twice. The small framework-neutral `/vendor/translation/js/translation-search.js` asset is loaded in both modes: fallback mode replaces only the results region with Fetch, while Livewire 4 uses SPA navigation and restores the search focus and caret. The package stylesheet remains `/vendor/translation/css/main.css` in both modes.
 
 Vue, Axios, Laravel Mix, and the old PostCSS/Tailwind chain remain removed. Installing Livewire is optional and does not change the Apricode palette or the package's published asset URLs.
 
@@ -310,7 +311,7 @@ Vue, Axios, Laravel Mix, and the old PostCSS/Tailwind chain remain removed. Inst
 
 The package view uses a responsive, full-width workspace with a graphite top navigation bar; it does not render a left sidebar. The brand label comes from the host application's `config('app.name')`, so the manager fits the application without package-specific branding. Language and translation screens share consistent page headings, white data surfaces, locale badges, primary actions, readable table spacing, and visible keyboard focus.
 
-Translation filters remain a normal Laravel GET form. Language and group selects intentionally disable the browser-native indicator and render exactly one package caret, which avoids the duplicate-arrow appearance caused by combining a native arrow with a custom icon. On narrow screens, actions and filters wrap while wide translation tables scroll inside their data surface instead of expanding the page.
+Translation filters remain a progressively enhanced Laravel GET form, so Enter and non-JavaScript navigation continue to work. Search runs after a short debounce without replacing the input, flashing the page, or losing keyboard focus; clearing it restores the complete filtered result set. Language and group selects intentionally disable the browser-native indicator and render exactly one package caret, which avoids the duplicate-arrow appearance caused by combining a native arrow with a custom icon. On narrow screens, actions and filters wrap while wide translation tables scroll inside their data surface instead of expanding the page.
 
 These are the package defaults. Published files under `resources/views/vendor/translation` override them; applications with customized published views must compare and merge the new layout and form partials manually. Republish only after backing up intentional application changes.
 
