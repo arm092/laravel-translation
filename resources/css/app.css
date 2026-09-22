@@ -320,12 +320,33 @@
     }
 
     .pagination {
-        @apply mt-5 flex items-center justify-center gap-4 text-sm text-graphite;
+        @apply mt-6 flex items-center justify-center gap-2 text-sm text-graphite;
     }
 
-    .pagination a {
-        @apply font-semibold text-primary;
+    .pagination-control,
+    .pagination-page {
+        @apply inline-flex min-h-10 items-center justify-center rounded-lg border border-graphite bg-white font-semibold text-graphite no-underline transition duration-150;
     }
+
+    .pagination-control { @apply gap-2 px-3; }
+    .pagination-page { @apply min-w-10 px-2; }
+
+    .pagination a,
+    .pagination button:not(:disabled) { @apply cursor-pointer; }
+
+    .pagination a:hover,
+    .pagination button:not(:disabled):hover { @apply border-primary bg-primary text-ink shadow-sm; }
+
+    .pagination a:focus-visible,
+    .pagination button:focus-visible { @apply outline-2 outline-offset-2 outline-info; }
+
+    .pagination-control[aria-disabled="true"],
+    .pagination-control:disabled,
+    .pagination-page:disabled { @apply cursor-not-allowed opacity-40; }
+
+    .pagination-pages { @apply flex items-center gap-1; }
+    .pagination-page.is-active { @apply border-primary bg-primary text-ink shadow-sm; }
+    .pagination-ellipsis { @apply inline-flex min-w-7 items-center justify-center text-graphite; }
 
     .quality-summary {
         @apply mb-6 grid grid-cols-2 gap-4 md:grid-cols-4;
@@ -368,6 +389,10 @@
         .page {
             @apply px-4 py-7;
         }
+
+        .pagination { @apply gap-1; }
+        .pagination-control { @apply min-w-10 px-2; }
+        .pagination-label { @apply sr-only; }
 
         .page-heading {
             @apply mb-6 items-start;

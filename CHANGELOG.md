@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
+## [4.1.5] - 2026-09-23
+
+### Changed
+
+- Replaced the minimal previous/current/next translation paginator with accessible numbered pagination, active and disabled states, pointer cursors, Apricode hover/focus styles, and a compact mobile layout in both Livewire and fallback modes.
+
 ## [4.1.4] - 2026-09-23
 
 ### Fixed

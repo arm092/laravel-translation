@@ -80,11 +80,5 @@
         </div>
     </div>
 
-    @if($translations->hasPages())
-        <nav class="pagination" aria-label="Pagination">
-            <button type="button" wire:click="previousPage" @disabled($translations->onFirstPage())>Previous</button>
-            <span>{{ $translations->currentPage() }} / {{ $translations->lastPage() }}</span>
-            <button type="button" wire:click="nextPage" @disabled(! $translations->hasMorePages())>Next</button>
-        </nav>
-    @endif
+    <x-translation::pagination :paginator="$translations" :livewire="true" />
 </div>
