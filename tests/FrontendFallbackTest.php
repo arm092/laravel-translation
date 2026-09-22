@@ -27,6 +27,7 @@ class FrontendFallbackTest extends TestCase
 
         $this->get(config('translation.ui_url'))
             ->assertOk()
+            ->assertSee('/vendor/translation/js/translation-search.js', false)
             ->assertSee('/vendor/translation/js/app.js', false)
             ->assertDontSee('/livewire/livewire', false);
     }

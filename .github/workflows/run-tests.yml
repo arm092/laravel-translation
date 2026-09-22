@@ -209,8 +209,9 @@ jobs:
 
       - name: Verify committed assets
         run: |
-          git diff --exit-code -- package-lock.json public/assets/css/main.css public/assets/js/app.js
+          git diff --exit-code -- package-lock.json public/assets/css/main.css public/assets/js/app.js public/assets/js/translation-search.js
           test -s public/assets/css/main.css
+          test -s public/assets/js/translation-search.js
           grep -qi -- '--color-primary:#fd971f' public/assets/css/main.css
 
   static-analysis:
