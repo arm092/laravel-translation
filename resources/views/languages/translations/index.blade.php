@@ -16,11 +16,17 @@
             </a>
         </div>
 
+        @if($translationFrontend->usesLivewire())
+            @php
+                echo app('livewire')->mount('translation-manager::translation-table', [
+                    'language' => $language,
+                ], 'translation-table-'.$language);
+            @endphp
+        @else
         <form
             action="{{ route($routeNames->get('languages.translations.index'), ['language' => $language]) }}"
             method="get"
             x-data
-            data-translation-frontend="{{ $translationFrontend->usesLivewire() ? 'livewire' : 'fallback' }}"
         >
             <div class="filter-bar">
                 @include('translation::forms.search', ['name' => 'filter', 'value' => Request::get('filter')])
@@ -59,24 +65,13 @@
                                                 <td>{{ $key }}</td>
                                                 <td>{{ $value[$sourceLocale] }}</td>
                                                 <td>
-                                                    @if($translationFrontend->usesLivewire())
-                                                        @php
-                                                            echo app('livewire')->mount('translation-manager::translation-input', [
-                                                                'initialTranslation' => $value[$language],
-                                                                'language' => $language,
-                                                                'group' => $group,
-                                                                'translationKey' => $key,
-                                                            ], 'translation-input-'.hash('sha256', $language."\0".$group."\0".$key));
-                                                        @endphp
-                                                    @else
-                                                        @include('translation::components.translation-input', [
-                                                            'initialTranslation' => $value[$language],
-                                                            'language' => $language,
-                                                            'group' => $group,
-                                                            'translationKey' => $key,
-                                                            'endpoint' => route($routeNames->get('languages.translations.update'), $language),
-                                                        ])
-                                                    @endif
+                                                    @include('translation::components.translation-input', [
+                                                        'initialTranslation' => $value[$language],
+                                                        'language' => $language,
+                                                        'group' => $group,
+                                                        'translationKey' => $key,
+                                                        'endpoint' => route($routeNames->get('languages.translations.update'), $language),
+                                                    ])
                                                 </td>
                                             </tr>
                             @endforeach
@@ -97,6 +92,7 @@
                 @endif
             </div>
         </form>
+        @endif
     </section>
 
 @endsection
