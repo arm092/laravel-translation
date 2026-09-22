@@ -20,10 +20,10 @@
         </main>
     </div>
     
-    <script type="module" src="{{ asset('/vendor/translation/js/translation-search.js') }}"></script>
     @if($translationFrontend->usesLivewire())
         @php(app('livewire')->forceAssetInjection())
     @else
+        <script type="module" src="{{ asset('/vendor/translation/js/translation-search.js') }}"></script>
         <script type="module" src="{{ asset('/vendor/translation/js/app.js') }}"></script>
     @endif
 </body>

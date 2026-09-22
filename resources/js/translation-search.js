@@ -3,34 +3,10 @@ const RESULTS_SELECTOR = '[data-translation-results]';
 
 export async function refreshTranslationSearch({
     url,
-    searchInput,
     results,
     fetchPage,
     replaceHistory,
-    livewireNavigate,
-    afterLivewireNavigation,
-    findSearchInput,
 }) {
-    if (livewireNavigate) {
-        const selectionStart = searchInput.selectionStart;
-        const selectionEnd = searchInput.selectionEnd;
-
-        afterLivewireNavigation(() => {
-            const nextInput = findSearchInput();
-
-            if (! nextInput) {
-                return;
-            }
-
-            nextInput.focus({ preventScroll: true });
-            nextInput.setSelectionRange(selectionStart, selectionEnd);
-        });
-
-        livewireNavigate(url);
-
-        return;
-    }
-
     results.innerHTML = await fetchPage(url);
     replaceHistory(url);
 }
@@ -90,9 +66,6 @@ export function registerTranslationSearch(documentRef = document) {
             }
 
             const url = filterUrl(form);
-            const usesLivewireNavigation = form.dataset.translationFrontend === 'livewire'
-                && typeof window.Livewire?.navigate === 'function';
-
             activeRequest?.abort();
             activeRequest = new AbortController();
             results.setAttribute('aria-busy', 'true');
@@ -100,15 +73,9 @@ export function registerTranslationSearch(documentRef = document) {
             try {
                 await refreshTranslationSearch({
                     url,
-                    searchInput,
                     results,
                     fetchPage: (targetUrl) => fetchResults(targetUrl, activeRequest.signal),
                     replaceHistory: (targetUrl) => window.history.replaceState({}, '', targetUrl),
-                    livewireNavigate: usesLivewireNavigation
-                        ? (targetUrl) => window.Livewire.navigate(targetUrl)
-                        : null,
-                    afterLivewireNavigation: (callback) => documentRef.addEventListener('livewire:navigated', callback, { once: true }),
-                    findSearchInput: () => documentRef.querySelector(SEARCH_SELECTOR),
                 });
             } catch (error) {
                 if (error.name !== 'AbortError') {

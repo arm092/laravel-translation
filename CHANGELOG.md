@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## [4.1.4] - 2026-09-23
+
+### Fixed
+
+- Livewire 4 now owns translation search, group filtering, page-size selection, results, and pagination in one component, so search updates no longer navigate or replace the page body.
+- The standalone Fetch search asset is now loaded only by the non-Livewire fallback frontend.
+
 ## [4.1.3] - 2026-09-23
 
 ### Fixed
