@@ -185,12 +185,12 @@ Why both `auth` and a gate? `auth` establishes who the user is; the gate decides
 
 ```php
 'protected_locales' => ['en'],
-'pagination' => 50,
+'pagination' => 25,
 ```
 
 Protected locales remain visible and usable as source languages, but package web writes, Livewire mutations, imports, formatting, and synchronization reject changes. CLI write commands require the explicit `--force-protected` option, making an accidental source-locale overwrite less likely. This is package-level protection; keep filesystem/database permissions and deployment controls in place.
 
-The manager accepts page sizes 25, 50, and 100 and preserves search, language, group, and page-size query parameters. Invalid values fall back to 50.
+The manager accepts page sizes 10, 25, 50, and 100 and preserves search, language, group, and page-size query parameters. The default is 25; invalid values also fall back to 25.
 
 ### Manager URL
 

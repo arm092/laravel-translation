@@ -30,9 +30,9 @@
         >
             <div class="filter-bar">
                 @include('translation::forms.search', ['name' => 'filter', 'value' => Request::get('filter')])
-                @include('translation::forms.select', ['name' => 'language', 'items' => $languages, 'submit' => true, 'selected' => $language])
-                @include('translation::forms.select', ['name' => 'group', 'items' => $groups, 'submit' => true, 'selected' => Request::get('group'), 'optional' => true])
-                @include('translation::forms.select', ['name' => 'per_page', 'items' => collect([25 => 25, 50 => 50, 100 => 100]), 'submit' => true, 'selected' => $perPage])
+                @include('translation::forms.select', ['name' => 'language', 'label' => __('translation::translation.language_filter'), 'items' => $languages, 'submit' => true, 'selected' => $language])
+                @include('translation::forms.select', ['name' => 'group', 'label' => __('translation::translation.group_filter'), 'items' => $groups, 'submit' => true, 'selected' => Request::get('group'), 'optional' => true])
+                @include('translation::forms.select', ['name' => 'per_page', 'label' => __('translation::translation.rows_per_page'), 'items' => collect([10 => 10, 25 => 25, 50 => 50, 100 => 100]), 'submit' => true, 'selected' => $perPage])
             </div>
 
             <div data-translation-results>

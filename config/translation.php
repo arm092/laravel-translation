@@ -81,8 +81,8 @@ return [
     /* Locales which remain readable but cannot be changed by the manager. */
     'protected_locales' => [],
 
-    /* Translation manager page size. Supported values: 25, 50 and 100. */
-    'pagination' => 50,
+    /* Translation manager page size. Supported values: 10, 25, 50 and 100. */
+    'pagination' => 25,
 
     /*
     |--------------------------------------------------------------------------
