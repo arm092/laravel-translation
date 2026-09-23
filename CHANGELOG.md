@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file.
 
+## [4.1.6] - 2026-09-23
+
+### Fixed
+
+- Render Laravel's trusted localized pagination labels without escaping their arrow entities or adding duplicate arrows.
+
+### Changed
+
+- Reduced the default translation-manager page size from 50 to 25 and added 10 to the existing 25/50/100 selector.
+- Added visible, localized labels above search, language, group, and page-size controls in both Livewire and fallback modes.
+
 ## [4.1.5] - 2026-09-23
 
 ### Changed

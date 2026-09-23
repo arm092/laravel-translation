@@ -76,9 +76,15 @@ class TranslationTableTest extends LivewireTestCase
         );
 
         $this->app->forgetInstance(Translation::class);
+        $this->app['translator']->addLines([
+            'pagination.previous' => '&laquo; Previous',
+            'pagination.next' => 'Next &raquo;',
+        ], 'en');
 
         Livewire::test(TranslationTable::class, ['language' => 'es'])
-            ->set('perPage', 25)
+            ->assertSet('perPage', 25)
+            ->assertDontSeeHtml('&amp;laquo;')
+            ->assertSeeHtml('&laquo; Previous')
             ->assertSee('page_01')
             ->assertDontSee('page_30')
             ->call('gotoPage', 2)

@@ -4,12 +4,12 @@
     <nav class="pagination" aria-label="Pagination">
         @if($livewire)
             <button type="button" class="pagination-control" wire:click="previousPage" wire:loading.attr="disabled" @disabled($paginator->onFirstPage()) aria-label="Previous page">
-                <span aria-hidden="true">&larr;</span><span class="pagination-label">{{ __('pagination.previous') }}</span>
+                <span class="pagination-label">{!! __('pagination.previous') !!}</span>
             </button>
         @elseif($paginator->onFirstPage())
-            <span class="pagination-control" aria-disabled="true"><span aria-hidden="true">&larr;</span><span class="pagination-label">{{ __('pagination.previous') }}</span></span>
+            <span class="pagination-control" aria-disabled="true"><span class="pagination-label">{!! __('pagination.previous') !!}</span></span>
         @else
-            <a class="pagination-control" href="{{ $paginator->previousPageUrl() }}" rel="prev" aria-label="Previous page"><span aria-hidden="true">&larr;</span><span class="pagination-label">{{ __('pagination.previous') }}</span></a>
+            <a class="pagination-control" href="{{ $paginator->previousPageUrl() }}" rel="prev" aria-label="Previous page"><span class="pagination-label">{!! __('pagination.previous') !!}</span></a>
         @endif
 
         <div class="pagination-pages">
@@ -28,12 +28,12 @@
 
         @if($livewire)
             <button type="button" class="pagination-control" wire:click="nextPage" wire:loading.attr="disabled" @disabled(! $paginator->hasMorePages()) aria-label="Next page">
-                <span class="pagination-label">{{ __('pagination.next') }}</span><span aria-hidden="true">&rarr;</span>
+                <span class="pagination-label">{!! __('pagination.next') !!}</span>
             </button>
         @elseif($paginator->hasMorePages())
-            <a class="pagination-control" href="{{ $paginator->nextPageUrl() }}" rel="next" aria-label="Next page"><span class="pagination-label">{{ __('pagination.next') }}</span><span aria-hidden="true">&rarr;</span></a>
+            <a class="pagination-control" href="{{ $paginator->nextPageUrl() }}" rel="next" aria-label="Next page"><span class="pagination-label">{!! __('pagination.next') !!}</span></a>
         @else
-            <span class="pagination-control" aria-disabled="true"><span class="pagination-label">{{ __('pagination.next') }}</span><span aria-hidden="true">&rarr;</span></span>
+            <span class="pagination-control" aria-disabled="true"><span class="pagination-label">{!! __('pagination.next') !!}</span></span>
         @endif
     </nav>
 @endif

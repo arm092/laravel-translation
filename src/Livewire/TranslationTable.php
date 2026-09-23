@@ -27,8 +27,8 @@ class TranslationTable extends Component
     #[Url(except: '')]
     public string $group = '';
 
-    #[Url(as: 'per_page', except: 50)]
-    public int $perPage = 50;
+    #[Url(as: 'per_page', except: 25)]
+    public int $perPage = 25;
 
     public function mount(string $language): void
     {
@@ -119,6 +119,6 @@ class TranslationTable extends Component
 
     private function validPerPage(int $perPage): int
     {
-        return in_array($perPage, [25, 50, 100], true) ? $perPage : 50;
+        return in_array($perPage, [10, 25, 50, 100], true) ? $perPage : 25;
     }
 }

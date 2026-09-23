@@ -264,12 +264,24 @@
     }
 
     .filter-bar {
-        @apply mb-5 flex items-center gap-3 rounded-xl border bg-white p-4;
+        @apply mb-5 flex items-end gap-3 rounded-xl border bg-white p-4;
         border-color: color-mix(in srgb, var(--color-graphite) 20%, transparent);
     }
 
+    .filter-field {
+        @apply min-w-36;
+    }
+
+    .filter-field-search {
+        @apply min-w-64 flex-1;
+    }
+
+    .filter-field > label {
+        @apply mb-2 block text-xs font-bold tracking-wider text-graphite uppercase;
+    }
+
     .search {
-        @apply relative min-w-64 flex-1;
+        @apply relative;
     }
 
     .search-input {
@@ -404,6 +416,10 @@
 
         .filter-bar {
             @apply flex-wrap;
+        }
+
+        .filter-field-search {
+            @apply min-w-full;
         }
 
         .search {

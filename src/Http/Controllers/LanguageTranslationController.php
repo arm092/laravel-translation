@@ -62,10 +62,10 @@ class LanguageTranslationController extends Controller
                 }
             }
         }
-        $allowed = [25, 50, 100];
-        $perPage = (int) $request->integer('per_page', (int) config('translation.pagination', 50));
+        $allowed = [10, 25, 50, 100];
+        $perPage = (int) $request->integer('per_page', (int) config('translation.pagination', 25));
         if (! in_array($perPage, $allowed, true)) {
-            $perPage = 50;
+            $perPage = 25;
         }
         $page = LengthAwarePaginator::resolveCurrentPage();
         $translations = new LengthAwarePaginator($rows->forPage($page, $perPage)->values(), $rows->count(), $perPage, $page, ['path' => $request->url(), 'query' => $request->query()]);
