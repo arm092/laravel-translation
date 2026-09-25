@@ -6,6 +6,8 @@
 
 Manage Laravel file or database translations through Artisan and a web interface.
 
+[![Sponsor Arm092](https://img.shields.io/badge/Sponsor-Arm092-F92672?style=for-the-badge&logo=githubsponsors&logoColor=FFFFFF)](https://github.com/sponsors/arm092)
+
 ![Laravel Translation manager with the Apricode interface](translation.png)
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/arm092/laravel-translation.svg?style=flat-square)](https://packagist.org/packages/arm092/laravel-translation)
