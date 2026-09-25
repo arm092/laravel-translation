@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
+## [4.1.7] - 2026-09-26
+
+### Documentation
+
+- Added a GitHub Sponsors badge near the top of the README and configured the repository's native Sponsor button for Arm092.
+
 ## [4.1.6] - 2026-09-23
 
 ### Fixed
