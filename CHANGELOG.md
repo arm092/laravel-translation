@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## [4.1.9] - 2026-11-09
+
+### Fixed
+
+- Made the Livewire 4 inline editor compatible with Livewire's CSP build by moving Alpine state, timers, focus handling, and save coordination out of inline expressions and into a named `Alpine.data` component.
+- Preserved the single-save blur flow when the active check button is clicked without loading a second Alpine instance.
+
 ## [4.1.8] - 2026-11-09
 
 ### Changed

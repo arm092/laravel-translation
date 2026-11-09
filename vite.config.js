@@ -11,6 +11,7 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 app: 'resources/js/app.js',
+                'livewire-editor': 'resources/js/livewire-editor.js',
                 'translation-search': 'resources/js/translation-search.js',
             },
             output: {
