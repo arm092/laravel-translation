@@ -307,12 +307,13 @@
     }
 
     .translation-editor textarea {
-        @apply h-auto w-full resize-none border-0 bg-transparent p-0 text-sm text-graphite;
+        @apply min-h-14 w-full resize-y rounded-lg border bg-white px-3 py-2 text-sm leading-relaxed text-graphite transition;
+        border-color: color-mix(in srgb, var(--color-graphite) 20%, transparent);
     }
 
     .translation-editor textarea.active {
-        @apply h-32 rounded-lg border bg-white p-3;
-        border-color: color-mix(in srgb, var(--color-graphite) 30%, transparent);
+        @apply min-h-32 border-info;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-info) 25%, transparent);
     }
 
     .status-message {

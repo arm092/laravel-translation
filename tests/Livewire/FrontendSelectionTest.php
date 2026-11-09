@@ -23,7 +23,8 @@ class FrontendSelectionTest extends LivewireTestCase
             'group' => 'messages',
             'translationKey' => 'hello',
         ])->assertSet('value', 'Hello')
-            ->assertSeeHtml('wire:blur="save"')
+            ->assertSeeHtml('<textarea')
+            ->assertSeeHtml('rows="2"')
             ->assertSeeHtml('wire:loading')
             ->assertSeeHtml('aria-live="polite"');
     }
