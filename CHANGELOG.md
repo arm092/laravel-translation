@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented in this file.
 
+## [4.1.8] - 2026-11-09
+
+### Changed
+
+- Inline translation editors are now visibly multiline textareas in both Livewire 4 and fallback modes.
+- Clicking either the textarea or pencil activates editing; the pencil becomes a check while active, and clicking it saves through the existing textarea blur path without issuing a second request.
+- Refreshed the frontend lockfile to patched Vite, Vitest, and transitive dependency releases.
+
 ## [4.1.7] - 2026-09-26
 
 ### Documentation

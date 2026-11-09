@@ -23,6 +23,7 @@ export function translationEditor() {
         value: '',
         persistedValue: '',
         active: false,
+        toggleWasActive: false,
         status: 'idle',
         resetTimer: null,
         endpoint: '',
@@ -46,6 +47,26 @@ export function translationEditor() {
         activate() {
             this.active = true;
             this.$nextTick(() => this.$refs.input.focus());
+        },
+
+        prepareToggle() {
+            this.toggleWasActive = this.active;
+        },
+
+        toggle() {
+            if (this.toggleWasActive) {
+                this.toggleWasActive = false;
+
+                return;
+            }
+
+            this.activate();
+        },
+
+        async handleBlur() {
+            this.active = false;
+
+            await this.save();
         },
 
         async save() {
