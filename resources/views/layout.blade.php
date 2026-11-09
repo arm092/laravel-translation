@@ -21,6 +21,7 @@
     </div>
     
     @if($translationFrontend->usesLivewire())
+        <script type="module" src="{{ asset('/vendor/translation/js/livewire-editor.js') }}"></script>
         @php(app('livewire')->forceAssetInjection())
     @else
         <script type="module" src="{{ asset('/vendor/translation/js/translation-search.js') }}"></script>
